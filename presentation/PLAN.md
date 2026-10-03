@@ -42,7 +42,7 @@ their next step; teams have no shared place to talk about their growth.
 **Architecture.** React 19 SPA (Vite 8) → REST JSON API under `/api` (JWT bearer) + SSE stream → Express 5 on Node 22
 → MariaDB 10.4 / MySQL 8 (23 tables) + local upload storage served at `/uploads` + Gmail SMTP (nodemailer) + OAuth
 providers. Deployment is prepared (Vercel rewrite for the UI, Railway/Render notes for the API) —
-The UI is live on Vercel with demo data: https://career-hive-ebon.vercel.app (since 2026-10-03); the API isn't hosted yet.
+Live since 2026-10-03 on free tiers: the UI on Vercel (https://career-hive-ebon.vercel.app), the API on Render (https://career-hive.onrender.com), MySQL 8.4 on Aiven.
 
 **AI features:** none. The CV coach is rule-based (no model, no external service), and the book says so.
 

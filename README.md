@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://career-hive-ebon.vercel.app"><b>Live demo</b></a> &nbsp;·&nbsp;
+  <a href="https://career-hive-ebon.vercel.app"><b>Live app</b></a> &nbsp;·&nbsp;
   <a href="presentation/pdf/CareerHive-Project-Book.pdf"><b>Project book</b></a> &nbsp;·&nbsp;
   <a href="#product-film"><b>Product film</b></a> &nbsp;·&nbsp;
   <a href="#architecture"><b>Architecture</b></a> &nbsp;·&nbsp;
@@ -23,9 +23,9 @@
   <img alt="MariaDB / MySQL" src="https://img.shields.io/badge/MariaDB%20%2F%20MySQL-23%20tables-003545?style=flat-square&logo=mariadb&logoColor=white">
 </p>
 
-<p align="center"><sub>9 features · 13 screens · 70 API routes · 23 tables · 35 end-to-end tests · 3 themes<br>Status: the UI is live on Vercel with demo data; the API and database run locally, ready for Railway / Render.</sub></p>
+<p align="center"><sub>9 features · 13 screens · 70 API routes · 23 tables · 35 end-to-end tests · 3 themes<br>Status: live on free tiers: the UI on Vercel, the API on Render, MySQL 8.4 on Aiven.</sub></p>
 
-<p align="center"><b><a href="https://career-hive-ebon.vercel.app">▶ Try the live demo</a></b><br><sub>Sign in with any password: <code>amine@careerhive.tn</code> (employee) · <code>hr@careerhive.tn</code> (HR) · <code>manager@careerhive.tn</code> (manager). Everything runs in your browser on fictional data.</sub></p>
+<p align="center"><b><a href="https://career-hive-ebon.vercel.app">▶ Open CareerHive</a></b><br><sub>Create an account with your email and confirm it from the link you receive. After 15 idle minutes the free server sleeps, so the first request can take up to a minute.</sub></p>
 
 ---
 
@@ -297,11 +297,19 @@ PDF upload).
 
 ## Deployment
 
-**The UI is live on Vercel: [career-hive-ebon.vercel.app](https://career-hive-ebon.vercel.app)**, in demo mode (no `VITE_API_URL`, so it runs on
-the in-browser demo server). Vercel builds `careerhive-ui` on every push to `main`; `vercel.json` rewrites every path
-to the SPA. The API and the database are ready for **Railway** or **Render** (`npm start`, then `npm run db:setup` once). Set `VITE_API_URL` on the UI and
-`API_URL`, `FRONTEND_URL`, `JWT_SECRET`, the `DB_*` variables and `STAFF_EMAILS` on the API. Uploads live on disk, so
-mount a volume at `UPLOAD_DIR` on hosts with an ephemeral file system.
+**Live at [career-hive-ebon.vercel.app](https://career-hive-ebon.vercel.app)**, on free tiers:
+
+| Part | Host | Setup |
+|---|---|---|
+| UI | **Vercel** | root `careerhive-ui`, `VITE_API_URL=https://career-hive.onrender.com`; rebuilt on every push to `main`; `vercel.json` rewrites every path to the SPA |
+| API | **Render** | root `careerhive-backend`, build `npm install && npm run db:setup`, start `npm start`, health check `/api/health`; [`render.yaml`](render.yaml) describes the same service as a Blueprint |
+| Database | **Aiven**, MySQL 8.4 | `DB_SSL=true` and `DB_SSL_REJECT_UNAUTHORIZED=false` (Aiven signs with its own CA) |
+
+On the API, set `FRONTEND_URL`, `JWT_SECRET`, the `DB_*` variables, `STAFF_EMAILS` and `SMTP_*`; `API_URL` defaults to
+Render's own address. Free-tier limits: the API sleeps after 15 idle minutes (the next request waits up to a minute),
+uploaded files are lost when it restarts (mount a disk at `UPLOAD_DIR` on a paid plan), and Aiven powers a free
+database off after a period of inactivity (power it on again from Aiven's console). Without `VITE_API_URL`, the UI
+runs on its in-browser demo server instead.
 
 ## Presentation kit
 

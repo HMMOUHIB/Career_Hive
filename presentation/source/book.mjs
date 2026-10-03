@@ -333,9 +333,9 @@ add('06 · Architecture', () => {
     <div class="abs mono" style="left:566px;top:486px;color:#fff">HTTPS · JSON</div><div class="abs mono" style="left:566px;top:538px;color:var(--night-dim);font-size:11px">Bearer JWT</div>
     <div class="abs mono" style="left:566px;top:656px;color:#fff">SSE push</div><div class="abs mono" style="left:566px;top:680px;color:var(--night-dim);font-size:11px">live notifications</div>
     <div class="card abs" style="left:120px;right:120px;bottom:96px;padding:20px 28px;display:flex;align-items:center;gap:26px">
-      <span class="mono" style="color:var(--sky)">Deployment · ${content.demo ? 'UI live (demo data)' : 'prepared'}</span>
+      <span class="mono" style="color:var(--sky)">Deployment · ${content.api ? 'live' : content.demo ? 'UI live (demo data)' : 'prepared'}</span>
       <span style="display:flex;gap:10px;align-items:center">${logoTile({ slug: 'vercel', size: 38 })}<span class="small" style="color:#fff">UI on Vercel (SPA rewrite)</span></span>
-      <span style="display:flex;gap:10px;align-items:center">${logoTile({ slug: 'railway', size: 38 })}${logoTile({ slug: 'render', size: 38 })}<span class="small" style="color:#fff">API + MySQL on Railway / Render</span></span>
+      <span style="display:flex;gap:10px;align-items:center">${content.api ? '' : logoTile({ slug: 'railway', size: 38 })}${logoTile({ slug: 'render', size: 38 })}<span class="small" style="color:#fff">${content.api ? 'API on Render · MySQL 8.4 on Aiven' : 'API + MySQL on Railway / Render'}</span></span>
       <span style="display:flex;gap:10px;align-items:center">${logoTile({ slug: 'xampp', size: 38 })}<span class="small" style="color:#fff">Local: XAMPP</span></span>
       <span style="margin-left:auto">${fact('demo', 'is it deployed? live URL')}</span>
     </div>
@@ -569,7 +569,7 @@ add('12 · Project journey', () => {
     </div>
     <div class="card abs" style="left:120px;right:120px;bottom:100px;padding:22px 30px;display:flex;gap:22px;align-items:center">
       ${tile('Rocket', { size: 46, tone: 'warn', soft: true })}
-      <div class="small" style="color:var(--ink);font-size:19px">${content.demo ? `The UI is live on Vercel with demo data: ${fact('demo')}. Next on the path: hosting the API and the database (Railway / Render).` : `Next on the path: deployment — configuration is ready (Vercel for the UI, Railway / Render for the API). ${fact('demo', 'live URL, if deployed')}`}</div>
+      <div class="small" style="color:var(--ink);font-size:19px">${content.api ? `Live on free tiers: the UI on Vercel (${fact('demo')}), the API on Render and MySQL 8.4 on Aiven. Next on the path: the social sign-in callbacks and always-on hosting.` : content.demo ? `The UI is live on Vercel with demo data: ${fact('demo')}. Next on the path: hosting the API and the database (Railway / Render).` : `Next on the path: deployment — configuration is ready (Vercel for the UI, Railway / Render for the API). ${fact('demo', 'live URL, if deployed')}`}</div>
     </div>
   </div>`
 })
@@ -694,7 +694,7 @@ add('Final', () => {
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:30px;max-width:1000px">${[`React ${ver('react')}`, `Vite ${ver('vite')}`, `Three.js ${ver('three')}`, `Framer Motion ${ver('framer-motion')}`, `Express ${ver('express')}`, 'MariaDB / MySQL', 'JWT · OAuth 2.0', 'Server-Sent Events'].map((c) => `<span class="chip">${c}</span>`).join('')}</div>
   </div>
   <div class="abs" style="left:120px;bottom:120px;display:flex;gap:24px;color:#fff">
-    ${link('Github', 'GitHub', 'github', 'repository URL')}${link('Globe', 'Live demo', 'demo', 'live URL')}${link('Mail', 'Contact', 'contact', 'email or site')}
+    ${link('Github', 'GitHub', 'github', 'repository URL')}${link('Globe', content.api ? 'Live app' : 'Live demo', 'demo', 'live URL')}${link('Mail', 'Contact', 'contact', 'email or site')}
   </div>
   <div class="abs" style="right:120px;top:160px;text-align:right;color:#fff">
     <div class="mono" style="color:rgba(255,255,255,.75)">Author</div><div class="h3" style="margin-top:10px;color:#fff">${fact('author')}</div>
