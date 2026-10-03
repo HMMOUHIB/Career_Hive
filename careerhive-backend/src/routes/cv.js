@@ -32,7 +32,7 @@ async function contextFor(userId) {
     q('SELECT id, title, level, category, duration, instructor, icon_url FROM formations WHERE available = 1'),
     q('SELECT formation_id, progress FROM user_formation_progress WHERE user_id = ?', [userId]),
     q("SELECT id, first_name, last_name, profile_photo, position, department FROM users WHERE role = 'manager' AND id <> ?", [userId]),
-    q('SELECT t.id, t.name, t.manager_user_id, COUNT(tm.id) AS members, AVG(tm.rating) AS rating FROM teams t LEFT JOIN team_members tm ON tm.team_id = t.id WHERE t.manager_user_id IS NOT NULL GROUP BY t.id'),
+    q('SELECT t.id, t.name, t.manager_user_id, COUNT(tm.id) AS members, AVG(tm.rating) AS rating FROM teams t LEFT JOIN team_members tm ON tm.team_id = t.id WHERE t.manager_user_id IS NOT NULL GROUP BY t.id, t.name, t.manager_user_id'),
     q(`SELECT t.manager_user_id AS manager, s.skill_name AS name FROM team_member_skills s JOIN team_members tm ON tm.id = s.team_member_id JOIN teams t ON t.id = tm.team_id
        UNION SELECT t.manager_user_id, sk.skill_name FROM skills sk JOIN team_members tm ON tm.user_id = sk.user_id JOIN teams t ON t.id = tm.team_id`),
     q("SELECT s.user_id AS manager, s.skill_name AS name FROM skills s JOIN users u ON u.id = s.user_id WHERE u.role = 'manager'"),

@@ -24,8 +24,10 @@ const since = `UTC_DATE() - INTERVAL ${WEEKS * 7} DAY`
 
 /** Catalog entries with enrollment stats. */
 async function formationStats(where = '1 = 1', params = []) {
-  const rows = await q(`SELECT f.*, COUNT(p.id) AS enrolled, COALESCE(SUM(p.progress >= 100), 0) AS completed, COALESCE(ROUND(AVG(p.progress)), 0) AS avg_progress
-    FROM formations f LEFT JOIN user_formation_progress p ON p.formation_id = f.id WHERE ${where} GROUP BY f.id`, params)
+  // stats are aggregated per formation first, so this is valid under ONLY_FULL_GROUP_BY (MySQL 8's default)
+  const rows = await q(`SELECT f.*, COALESCE(p.enrolled, 0) AS enrolled, COALESCE(p.completed, 0) AS completed, COALESCE(p.avg_progress, 0) AS avg_progress
+    FROM formations f LEFT JOIN (SELECT formation_id, COUNT(*) AS enrolled, SUM(progress >= 100) AS completed, ROUND(AVG(progress)) AS avg_progress
+      FROM user_formation_progress GROUP BY formation_id) p ON p.formation_id = f.id WHERE ${where}`, params)
   const skills = await skillsByFormation(rows.map((f) => f.id))
   return rows.map((f) => ({ ...formationOut(f, skills.get(f.id)), enrolled: Number(f.enrolled), completed: Number(f.completed), avgProgress: Number(f.avg_progress) }))
 }
@@ -103,8 +105,8 @@ async function orgPanel(role) {
     q('SELECT status, COUNT(*) AS n FROM promotion_requests GROUP BY status'),
     q('SELECT status, COUNT(*) AS n FROM formation_requests GROUP BY status'),
     q('SELECT MIN(skill_name) AS name, COUNT(*) AS count FROM skills GROUP BY LOWER(skill_name) ORDER BY count DESC, name LIMIT 6'),
-    q(`SELECT COALESCE(NULLIF(department, ''), 'Unassigned') AS name, COUNT(*) AS count FROM users WHERE role = 'student'
-      GROUP BY COALESCE(NULLIF(department, ''), 'Unassigned') ORDER BY count DESC, name LIMIT 6`),
+    q(`SELECT name, COUNT(*) AS count FROM (SELECT COALESCE(NULLIF(department, ''), 'Unassigned') AS name FROM users WHERE role = 'student') d
+      GROUP BY name ORDER BY count DESC, name LIMIT 6`),
     q(`SELECT 'e' AS k, started_at AS d FROM user_formation_progress WHERE started_at >= ${since}
       UNION ALL SELECT 'r', requested_at FROM formation_requests WHERE requested_at >= ${since}
       UNION ALL SELECT 'r', submitted_date FROM promotion_requests WHERE submitted_date >= ${since}

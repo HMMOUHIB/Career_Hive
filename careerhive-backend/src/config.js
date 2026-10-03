@@ -12,7 +12,8 @@ const production = env.NODE_ENV === 'production'
 export const config = {
   production,
   port,
-  apiUrl: (env.API_URL || `http://localhost:${port}`).replace(/\/$/, ''), // public URL, used for OAuth callbacks
+  // public URL, used for OAuth callbacks and email links; Render sets RENDER_EXTERNAL_URL itself
+  apiUrl: (env.API_URL || env.RENDER_EXTERNAL_URL || `http://localhost:${port}`).replace(/\/$/, ''),
   frontendUrl: (env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, ''),
   corsOrigins: list(env.CORS_ORIGINS, env.FRONTEND_URL || 'http://localhost:5173,http://127.0.0.1:5173'),
   jwtSecret: env.JWT_SECRET,
