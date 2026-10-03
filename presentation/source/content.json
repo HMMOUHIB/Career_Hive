@@ -1,0 +1,9 @@
+{
+  "_comment": "Fill the empty values; anything left empty is printed as [INFORMATION NEEDED]. Then run: node presentation/source/build.mjs",
+  "author": "Mouhib Hamzaoui",
+  "year": "2026",
+  "context": "",
+  "github": "",
+  "demo": "",
+  "contact": ""
+}

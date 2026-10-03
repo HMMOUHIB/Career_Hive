@@ -1,0 +1,32 @@
+{
+  "name": "careerhive-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CareerHive API: Express + MySQL backend for careerhive-ui",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:setup": "node scripts/db.js setup",
+    "db:reset": "node scripts/db.js reset",
+    "db:demo": "node scripts/db.js setup --demo",
+    "test": "node --test --test-concurrency=1 test/*.test.js",
+    "user:role": "node scripts/user-role.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "jsonwebtoken": "^9.0.3",
+    "mammoth": "^1.13.0",
+    "multer": "^2.4.0",
+    "mysql2": "^3.24.4",
+    "nodemailer": "^10.0.11",
+    "unpdf": "^1.8.1"
+  }
+}
