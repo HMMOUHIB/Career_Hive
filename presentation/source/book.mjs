@@ -683,7 +683,7 @@ add('17 · Conclusion', () => `<div class="inner">
 // 33 — Final page
 add('Final', () => {
   const link = (ic, label, key, what) => `<div class="card" style="padding:26px 28px;display:flex;gap:20px;align-items:center;min-width:430px">
-    ${content[key] ? `<div class="qr" data-qr="${content[key]}" style="width:96px;height:96px;background:#fff;border-radius:12px;padding:6px"></div>` : `<div style="width:96px;height:96px;border-radius:16px;border:2px dashed rgba(255,255,255,.45);display:grid;place-items:center;color:rgba(255,255,255,.7)">${icon('QrCode', 40)}</div>`}
+    ${content[key] ? `<div class="qr" data-qr="${key === 'contact' && /^[^@\s]+@[^@\s]+$/.test(content[key]) ? `mailto:${content[key]}` : content[key]}" style="width:96px;height:96px;background:#fff;border-radius:12px;padding:6px"></div>` : `<div style="width:96px;height:96px;border-radius:16px;border:2px dashed rgba(255,255,255,.45);display:grid;place-items:center;color:rgba(255,255,255,.7)">${icon('QrCode', 40)}</div>`}
     <div><div class="mono" style="color:rgba(255,255,255,.75)">${label}</div><div style="margin-top:8px;font-size:19px;font-weight:600">${fact(key, what)}</div></div></div>`
   return `
   <div class="glow" style="width:1000px;height:1000px;left:-300px;top:-400px;background:rgba(255,255,255,.18)"></div>

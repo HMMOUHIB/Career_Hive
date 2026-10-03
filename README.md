@@ -317,7 +317,7 @@ in [`presentation/README.md`](presentation/README.md).
 
 ## Author
 
-**Mouhib Hamzaoui** · [GitHub @HMMOUHIB](https://github.com/HMMOUHIB)
+**Mouhib Hamzaoui** · [GitHub @HMMOUHIB](https://github.com/HMMOUHIB) · [hamzaouimoh54@gmail.com](mailto:hamzaouimoh54@gmail.com)
 
 Designed and built CareerHive end to end: product, interface, backend, database, tests and the presentation system.
 
