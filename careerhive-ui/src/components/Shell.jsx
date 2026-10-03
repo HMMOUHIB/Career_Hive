@@ -95,7 +95,9 @@ export function Sidebar({ open, onNavigate }) {
 
 export function Topbar({ onMenu }) {
   const { state, actions } = useStore()
-  const dark = state.theme === 'ember'
+  // the top-bar button cycles Frost → Dark → Light → Frost and shows the theme it switches to
+  const CYCLE = ['frost', 'ember', 'light']
+  const next = THEMES.find((t) => t.id === CYCLE[(CYCLE.indexOf(state.theme) + 1) % CYCLE.length])
   const { isStaff } = useDerived()
   const navigate = useNavigate()
   const h = new Date().getHours()
@@ -108,10 +110,10 @@ export function Topbar({ onMenu }) {
         <Icon name="Search" size={17} />
         <input placeholder="Search formations…" onKeyDown={(e) => e.key === 'Enter' && navigate(`/formations?q=${encodeURIComponent(e.currentTarget.value)}`)} />
       </label>
-      <motion.button className="icon-btn" aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} onClick={() => actions.setTheme(dark ? 'light' : 'ember')} whileTap={{ rotate: 180, scale: 0.9 }}>
+      <motion.button className="icon-btn" aria-label={`Switch to ${next.label}`} title={`Switch to ${next.label}`} onClick={() => actions.setTheme(next.id)} whileTap={{ rotate: 180, scale: 0.9 }}>
         <AnimatePresence mode="wait" initial={false}>
-          <motion.span key={dark ? 'sun' : 'moon'} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} style={{ display: 'grid' }}>
-            <Icon name={dark ? 'Sun' : 'Moon'} size={18} />
+          <motion.span key={next.id} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} style={{ display: 'grid' }}>
+            <Icon name={next.icon} size={18} />
           </motion.span>
         </AnimatePresence>
       </motion.button>
