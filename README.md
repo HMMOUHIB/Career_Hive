@@ -301,7 +301,7 @@ PDF upload).
 
 | Part | Host | Setup |
 |---|---|---|
-| UI | **Vercel** | root `careerhive-ui`, `VITE_API_URL=https://career-hive.onrender.com`; rebuilt on every push to `main`; `vercel.json` rewrites every path to the SPA |
+| UI | **Vercel** | root `careerhive-ui`; `careerhive-ui/.env.production` sets `VITE_API_URL=https://career-hive.onrender.com`; rebuilt on every push to `main`; `vercel.json` rewrites every path to the SPA |
 | API | **Render** | root `careerhive-backend`, build `npm install && npm run db:setup`, start `npm start`, health check `/api/health`; [`render.yaml`](render.yaml) describes the same service as a Blueprint |
 | Database | **Aiven**, MySQL 8.4 | `DB_SSL=true` and `DB_SSL_REJECT_UNAUTHORIZED=false` (Aiven signs with its own CA) |
 
