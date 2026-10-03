@@ -4,7 +4,7 @@ import { siGithub } from 'simple-icons'
 import { api, DEMO } from '../api/client'
 import Logo, { BrandTitle } from '../components/Logo'
 import { Icon, Tabs } from '../components/ui'
-import { useStore } from '../store/store'
+import { nextTheme, useStore } from '../store/store'
 
 const Mascot = lazy(() => import('../three/Mascot'))
 
@@ -112,8 +112,8 @@ export default function Login() {
         </section>
 
         <section className="auth-panel">
-          <button className="icon-btn" style={{ position: 'absolute', top: 20, right: 20 }} aria-label="Toggle light mode" onClick={() => actions.setTheme(state.theme === 'ember' ? 'light' : 'ember')}>
-            <Icon name={state.theme === 'ember' ? 'Sun' : 'Moon'} size={18} />
+          <button className="icon-btn" style={{ position: 'absolute', top: 20, right: 20 }} aria-label={`Switch to ${nextTheme(state.theme).label}`} title={`Switch to ${nextTheme(state.theme).label}`} onClick={() => actions.setTheme(nextTheme(state.theme).id)}>
+            <Icon name={nextTheme(state.theme).icon} size={18} />
           </button>
           {sent ? (
             <motion.div className="auth-sent" key={`sent-${sent.kind}`} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>

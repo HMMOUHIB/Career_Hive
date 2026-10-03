@@ -22,7 +22,7 @@ async function open({ theme = 'frost', width = 1440, height = 900, scale = 2, mo
   const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, isMobile: mobile, hasTouch: mobile })
   const page = await ctx.newPage()
   page.on('pageerror', (e) => console.log('  [pageerror]', e.message))
-  await page.addInitScript((t) => { try { localStorage.clear(); localStorage.setItem('ch_theme_v2', t) } catch { /* */ } }, theme)
+  await page.addInitScript((t) => { try { localStorage.clear(); localStorage.setItem('ch_theme_v3', t) } catch { /* */ } }, theme)
   await page.goto(BASE)
   await page.addStyleTag({ content: CLEAN })
   await page.waitForSelector('.splash', { state: 'detached', timeout: 60000 }).catch(() => {})

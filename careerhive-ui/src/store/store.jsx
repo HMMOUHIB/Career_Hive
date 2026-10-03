@@ -12,7 +12,7 @@ const readPrefs = () => { try { return JSON.parse(localStorage.getItem('ch_chat_
 const readJSON = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? d } catch { return d } }
 const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch { /* ignore */ } }
 // The app opens in the blue Frost theme; a theme you pick is remembered (new key, so older saved picks start over on Frost).
-const THEME_KEY = 'ch_theme_v2'
+const THEME_KEY = 'ch_theme_v3' // v3: every browser starts again in Frost, then keeps its own choice
 const readTheme = () => { try { return localStorage.getItem(THEME_KEY) || 'frost' } catch { return 'frost' } }
 
 const initial = {
@@ -72,6 +72,9 @@ function reducer(s, a) {
 const num = (d) => parseFloat(String(d ?? '').replace(',', '.')) || 0
 export const fullName = (u) => [u?.firstName, u?.lastName].filter(Boolean).join(' ')
 export const roleLabel = { student: 'Employee', manager: 'Manager', hr: 'HR', admin: 'Admin' }
+/** The theme buttons (top bar, sign-in page) cycle Frost → Dark → Light → Frost; this is the one they switch to next. */
+const THEME_CYCLE = [{ id: 'frost', label: 'Frost', icon: 'Snowflake' }, { id: 'ember', label: 'Dark', icon: 'Moon' }, { id: 'light', label: 'Light', icon: 'Sun' }]
+export const nextTheme = (id) => THEME_CYCLE[(THEME_CYCLE.findIndex((t) => t.id === id) + 1) % THEME_CYCLE.length]
 
 export function StoreProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initial)

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { colorFor, fullName, roleLabel, useDerived, useStore } from '../store/store'
+import { colorFor, fullName, nextTheme, roleLabel, useDerived, useStore } from '../store/store'
 import Logo, { BrandTitle } from './Logo'
 import { ActiveNow } from './Messenger'
 import { NotificationBell } from './NotificationCenter'
@@ -95,9 +95,7 @@ export function Sidebar({ open, onNavigate }) {
 
 export function Topbar({ onMenu }) {
   const { state, actions } = useStore()
-  // the top-bar button cycles Frost → Dark → Light → Frost and shows the theme it switches to
-  const CYCLE = ['frost', 'ember', 'light']
-  const next = THEMES.find((t) => t.id === CYCLE[(CYCLE.indexOf(state.theme) + 1) % CYCLE.length])
+  const next = nextTheme(state.theme) // the button shows the theme it switches to
   const { isStaff } = useDerived()
   const navigate = useNavigate()
   const h = new Date().getHours()
