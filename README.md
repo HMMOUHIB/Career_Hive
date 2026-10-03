@@ -7,6 +7,7 @@
 </p>
 
 <p align="center">
+  <a href="https://career-hive-ebon.vercel.app"><b>Live demo</b></a> &nbsp;·&nbsp;
   <a href="presentation/pdf/CareerHive-Project-Book.pdf"><b>Project book</b></a> &nbsp;·&nbsp;
   <a href="#product-film"><b>Product film</b></a> &nbsp;·&nbsp;
   <a href="#architecture"><b>Architecture</b></a> &nbsp;·&nbsp;
@@ -22,7 +23,9 @@
   <img alt="MariaDB / MySQL" src="https://img.shields.io/badge/MariaDB%20%2F%20MySQL-23%20tables-003545?style=flat-square&logo=mariadb&logoColor=white">
 </p>
 
-<p align="center"><sub>9 features · 13 screens · 70 API routes · 23 tables · 35 end-to-end tests · 3 themes<br>Status: runs locally; deployment is prepared (Vercel + Railway / Render) but not live yet.</sub></p>
+<p align="center"><sub>9 features · 13 screens · 70 API routes · 23 tables · 35 end-to-end tests · 3 themes<br>Status: the UI is live on Vercel with demo data; the API and database run locally, ready for Railway / Render.</sub></p>
+
+<p align="center"><b><a href="https://career-hive-ebon.vercel.app">▶ Try the live demo</a></b><br><sub>Sign in with any password: <code>amine@careerhive.tn</code> (employee) · <code>hr@careerhive.tn</code> (HR) · <code>manager@careerhive.tn</code> (manager). Everything runs in your browser on fictional data.</sub></p>
 
 ---
 
@@ -294,8 +297,9 @@ PDF upload).
 
 ## Deployment
 
-Prepared, not live yet. The UI is ready for **Vercel** (`vercel.json` rewrites every path to the SPA); the API and the
-database for **Railway** or **Render** (`npm start`, then `npm run db:setup` once). Set `VITE_API_URL` on the UI and
+**The UI is live on Vercel: [career-hive-ebon.vercel.app](https://career-hive-ebon.vercel.app)**, in demo mode (no `VITE_API_URL`, so it runs on
+the in-browser demo server). Vercel builds `careerhive-ui` on every push to `main`; `vercel.json` rewrites every path
+to the SPA. The API and the database are ready for **Railway** or **Render** (`npm start`, then `npm run db:setup` once). Set `VITE_API_URL` on the UI and
 `API_URL`, `FRONTEND_URL`, `JWT_SECRET`, the `DB_*` variables and `STAFF_EMAILS` on the API. Uploads live on disk, so
 mount a volume at `UPLOAD_DIR` on hosts with an ephemeral file system.
 

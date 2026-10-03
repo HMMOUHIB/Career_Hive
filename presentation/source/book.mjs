@@ -333,7 +333,7 @@ add('06 · Architecture', () => {
     <div class="abs mono" style="left:566px;top:486px;color:#fff">HTTPS · JSON</div><div class="abs mono" style="left:566px;top:538px;color:var(--night-dim);font-size:11px">Bearer JWT</div>
     <div class="abs mono" style="left:566px;top:656px;color:#fff">SSE push</div><div class="abs mono" style="left:566px;top:680px;color:var(--night-dim);font-size:11px">live notifications</div>
     <div class="card abs" style="left:120px;right:120px;bottom:96px;padding:20px 28px;display:flex;align-items:center;gap:26px">
-      <span class="mono" style="color:var(--sky)">Deployment · prepared</span>
+      <span class="mono" style="color:var(--sky)">Deployment · ${content.demo ? 'UI live (demo data)' : 'prepared'}</span>
       <span style="display:flex;gap:10px;align-items:center">${logoTile({ slug: 'vercel', size: 38 })}<span class="small" style="color:#fff">UI on Vercel (SPA rewrite)</span></span>
       <span style="display:flex;gap:10px;align-items:center">${logoTile({ slug: 'railway', size: 38 })}${logoTile({ slug: 'render', size: 38 })}<span class="small" style="color:#fff">API + MySQL on Railway / Render</span></span>
       <span style="display:flex;gap:10px;align-items:center">${logoTile({ slug: 'xampp', size: 38 })}<span class="small" style="color:#fff">Local: XAMPP</span></span>
@@ -569,7 +569,7 @@ add('12 · Project journey', () => {
     </div>
     <div class="card abs" style="left:120px;right:120px;bottom:100px;padding:22px 30px;display:flex;gap:22px;align-items:center">
       ${tile('Rocket', { size: 46, tone: 'warn', soft: true })}
-      <div class="small" style="color:var(--ink);font-size:19px">Next on the path: deployment — configuration is ready (Vercel for the UI, Railway / Render for the API). ${fact('demo', 'live URL, if deployed')}</div>
+      <div class="small" style="color:var(--ink);font-size:19px">${content.demo ? `The UI is live on Vercel with demo data: ${fact('demo')}. Next on the path: hosting the API and the database (Railway / Render).` : `Next on the path: deployment — configuration is ready (Vercel for the UI, Railway / Render for the API). ${fact('demo', 'live URL, if deployed')}`}</div>
     </div>
   </div>`
 })

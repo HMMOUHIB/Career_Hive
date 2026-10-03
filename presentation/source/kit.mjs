@@ -108,7 +108,7 @@ function social() {
     </div>
     <div class="card" style="position:absolute;left:72px;right:72px;bottom:120px;padding:30px 34px;background:var(--ink);color:#fff;border:0">
       <div class="h3" style="color:#fff">${content.github ? 'Read the full case study' : 'Building something like this?'}</div>
-      <div style="margin-top:12px;font-size:20px;color:#b9c8e2">${content.github ? `${pageCount()}-page project book · GitHub: ${fact('github')}` : `Message me on LinkedIn · ${pageCount()}-page case study on request`}</div>
+      <div style="margin-top:12px;font-size:20px;color:#b9c8e2">${content.github ? `${pageCount()}-page project book · GitHub: ${fact('github')}` : content.demo ? `Try it live: ${content.demo.replace(/^https?:\/\//, '')} · or message me on LinkedIn` : `Message me on LinkedIn · ${pageCount()}-page case study on request`}</div>
     </div>`))
 
   // LinkedIn — showcase, architecture, stack, final result (1200×627)
