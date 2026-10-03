@@ -39,8 +39,8 @@ export default function Dashboard() {
               <span className="round white" style={{ width: 32, height: 32 }}><Icon name="Briefcase" size={15} /></span>
               <span className="round white" style={{ width: 32, height: 32 }}><Icon name="Award" size={15} /></span>
             </div>
-            {/* staff without a job title show their role; employees are asked for a position (it counts toward promotion) */}
-            <Reveal key={u.position || u.role} text={u.position || (d.isStaff ? roleLabel[u.role] : 'Set your position')} delay={0.35} />
+            {/* without a job title, the title is the person's role: Employee, Manager or HR */}
+            <Reveal key={u.position || u.role} text={u.position || roleLabel[u.role] || 'Employee'} delay={0.35} />
             {d.isStaff ? ( // HR and managers run formations and reviews; they don't follow the employee path
               <p>{u.department ? `${u.department} · ` : ''}{state.formations.length} formation{state.formations.length === 1 ? '' : 's'} in the catalog · {waiting} request{waiting === 1 ? '' : 's'} waiting on you.</p>
             ) : (
