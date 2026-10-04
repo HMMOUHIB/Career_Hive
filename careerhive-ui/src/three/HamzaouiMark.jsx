@@ -10,9 +10,10 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Suspense, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import modelUrl from '../assets/hamzaoui.glb?url'
+import { renderer, RESIZE } from './renderer'
 
 const FIT = 4.4 // the emblem's diameter in scene units; the camera sees ~5.4 at its distance
-const TINT = { frost: '#2f7bf6', ember: '#ff6a55', light: '#d63a3a' }
+const TINT = { dark: '#ff5b45', light: '#d8402b' }
 const TURN = 1.6 // seconds per coin turn on the loading screen: 0.95 s turning, then a short rest
 const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2)
 
@@ -33,7 +34,7 @@ function Emblem({ theme, tone, spin, onReady }) {
   useEffect(() => { onReady?.() }, [onReady]) // the model has loaded and is on screen
 
   useEffect(() => {
-    const color = tone === 'white' ? '#ffffff' : TINT[theme] ?? TINT.frost
+    const color = tone === 'white' ? '#ffffff' : TINT[theme] ?? TINT.dark
     material.color.set(color); material.emissive.set(color)
     material.emissiveIntensity = tone === 'white' ? 0.2 : 0.3
     invalidate()
@@ -46,10 +47,12 @@ function Emblem({ theme, tone, spin, onReady }) {
   return <primitive object={fit} />
 }
 
+const GL = renderer({ alpha: true, antialias: true, powerPreference: 'low-power' })
+
 export default function HamzaouiMark({ theme, tone = 'accent', spin = false, className = 'logo-mark', onReady }) {
   return (
     <span className={className} aria-hidden="true">
-      <Canvas frameloop={spin ? 'always' : 'demand'} flat dpr={[1, 2]} camera={{ position: [0, 0, 10], fov: 30 }} gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}>
+      <Canvas frameloop={spin ? 'always' : 'demand'} flat dpr={[1, 2]} camera={{ position: [0, 0, 10], fov: 30 }} gl={GL} resize={RESIZE}>
         <ambientLight intensity={1.2} />
         <directionalLight position={[3, 4, 6]} intensity={2} />
         <Suspense fallback={null}><Emblem theme={theme} tone={tone} spin={spin} onReady={onReady} /></Suspense>

@@ -4,10 +4,10 @@
  * - VITE_API_URL set  -> talks to your Express backend (JWT in Authorization header).
  * - VITE_API_URL empty -> runs against the in-browser demo server (src/api/demo.js).
  */
-import { demoAnalyzeCv, demoLogout, demoRequest, demoUpload } from './demo'
-
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 export const DEMO = !BASE
+// the demo server and its mock data load only in demo builds; the real app never downloads them
+const demo = () => import('./demo')
 
 const TOKEN_KEY = 'ch_token'
 export const auth = {
@@ -39,13 +39,44 @@ export function captureOAuthToken() {
   return { error: AUTH_ERRORS[url.searchParams.get('error')] ?? 'Social sign-in failed. Please try again.' }
 }
 
+/**
+ * Render's free plan stops the API after 15 idle minutes and takes ~30–60 s to start it again; a browser sent straight
+ * to it meanwhile gets Render's "waking up" page. wake() polls /api/health until Express answers, and fails with the
+ * API's message when the database behind it is down. One shared attempt: requests and social sign-in wait on it.
+ */
+let waking = null
+let awake = DEMO
+export const apiAwake = () => awake
+export function wake() {
+  if (DEMO) return Promise.resolve()
+  waking ??= (async () => {
+    for (const until = Date.now() + 120_000; Date.now() < until;) {
+      let res = null
+      try { res = await fetch(`${BASE}/api/health`, { cache: 'no-store' }) } catch { /* still starting: Render's holding page carries no CORS headers */ }
+      if (res?.headers.get('content-type')?.includes('json')) { // Express answered
+        if (res.ok) { awake = true; return }
+        waking = null
+        throw new Error((await res.json().catch(() => ({}))).message ?? 'The server is not ready yet. Please try again in a minute.')
+      }
+      await new Promise((r) => setTimeout(r, 2000))
+    }
+    waking = null
+    throw new Error('The server is taking too long to start. Please try again in a minute.')
+  })()
+  return waking
+}
+if (!DEMO) wake().catch(() => {}) // start it the moment the app opens, while the person is still typing
+
 async function request(method, path, body) {
-  if (DEMO) return demoRequest(method, path, body)
-  const res = await fetch(BASE + path, {
+  if (DEMO) return (await demo()).demoRequest(method, path, body)
+  await wake()
+  const send = () => fetch(BASE + path, {
     method,
     headers: { 'Content-Type': 'application/json', ...(auth.token ? { Authorization: `Bearer ${auth.token}` } : {}) },
     body: body ? JSON.stringify(body) : undefined,
   })
+  // a request that never reached the API fails as a network error: it may have gone back to sleep, so wait and retry once
+  const res = await send().catch(() => { awake = false; waking = null; return wake().then(send) })
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
     const e = new Error(data.message ?? res.statusText)
@@ -70,7 +101,7 @@ export const api = {
   resetPassword: (token, password) => post('/api/auth/reset-password', { token, password }),
   me: () => get('/api/auth/me').then((r) => r.user),
   oauthUrl: (provider) => (DEMO ? null : `${BASE}/api/auth/${provider}`), // google | linkedin | github
-  logout: () => { auth.token = null; if (DEMO) demoLogout() },
+  logout: () => { auth.token = null; if (DEMO) demo().then((d) => d.demoLogout()) },
 
   dashboard: () => get('/api/dashboard'),
 
@@ -120,7 +151,7 @@ export const api = {
 
   // course content (optional backend module formation-content.js)
   resources: (fid) => get(`/api/formations/${fid}/resources`).then((r) => r.resources),
-  uploadResources: (fid, files, onProgress) => (DEMO ? demoUpload(fid, files, onProgress) : xhrUpload(`/api/formations/${fid}/resources`, files, onProgress)),
+  uploadResources: (fid, files, onProgress) => (DEMO ? demo().then((d) => d.demoUpload(fid, files, onProgress)) : xhrUpload(`/api/formations/${fid}/resources`, files, onProgress)),
   addResourceLink: (fid, title, url) => post(`/api/formations/${fid}/resources/link`, { title, url }).then((r) => r.resource),
   updateResource: (rid, patch) => request('PATCH', `/api/formation-resources/${rid}`, patch),
   deleteResource: (rid) => del(`/api/formation-resources/${rid}`),
@@ -157,7 +188,7 @@ export const api = {
   // CV coach: upload a CV → skills, experience, score, gaps, best formations and manager (the file isn't stored)
   cvAnalysis: () => get('/api/cv/analysis'),
   deleteCvAnalysis: () => del('/api/cv/analysis'),
-  analyzeCv: (file, onProgress) => (DEMO ? demoAnalyzeCv(file) : xhrForm('/api/cv/analyze', 'cv', file, onProgress).then((d) => d.analysis)),
+  analyzeCv: (file, onProgress) => (DEMO ? demo().then((d) => d.demoAnalyzeCv(file)) : xhrForm('/api/cv/analyze', 'cv', file, onProgress).then((d) => d.analysis)),
 }
 
 /** One-file multipart POST with upload progress; resolves with the JSON body. */

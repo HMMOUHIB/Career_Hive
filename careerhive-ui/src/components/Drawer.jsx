@@ -1,35 +1,41 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import Presence from '../motion/Presence'
 import { Icon } from './ui'
 
+/**
+ * A side panel over the page (a dialog): slides in from the right, Escape or the scrim closes it, focus moves into it
+ * and goes back to whatever opened it. Portalled to <body> so it sits above the navigation.
+ */
 export default function Drawer({ open, onClose, cover, art, title, eyebrow, children, footer, wide }) {
+  const panel = useRef(null)
   useEffect(() => {
     if (!open) return
+    const opener = document.activeElement
     const k = (e) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', k)
-    return () => window.removeEventListener('keydown', k)
+    requestAnimationFrame(() => panel.current?.querySelector('.drawer-close')?.focus({ preventScroll: true }))
+    return () => { window.removeEventListener('keydown', k); opener?.focus?.({ preventScroll: true }) }
   }, [open, onClose])
-  // Portal to <body> so the drawer always sits above the sidebar, rails and animated backgrounds.
+
   return createPortal(
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div className="drawer-back" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
-          <motion.aside className={`drawer ${wide ? 'wide' : ''}`} role="dialog" aria-label={title}
-            initial={{ x: '110%', rotate: 2 }} animate={{ x: 0, rotate: 0 }} exit={{ x: '110%' }} transition={{ type: 'spring', stiffness: 260, damping: 30 }}>
-            <div className="drawer-cover" style={{ background: cover ?? 'var(--hero)' }}>
-              {art}
-              <button className="round white" onClick={onClose} style={{ position: 'absolute', top: 18, right: 18 }} aria-label="Close"><Icon name="X" size={16} /></button>
-              {eyebrow && <div className="eyebrow" style={{ color: 'rgba(255,255,255,.8)' }}>{eyebrow}</div>}
-              <h2 style={{ fontSize: 24, letterSpacing: '-0.02em', marginTop: 6 }}>{title}</h2>
-            </div>
-            <div className="drawer-body">{children}</div>
-            {footer && <div className="drawer-foot">{footer}</div>}
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>,
+    <>
+      <Presence show={open} variant="fade" duration={0.3}>
+        <div className="scrim drawer-back" onClick={onClose} aria-hidden="true" />
+      </Presence>
+      <Presence show={open} variant="drawer" duration={0.55}>
+        <aside ref={panel} className={`drawer ${wide ? 'wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
+          <div className="drawer-cover" style={{ background: cover ?? 'var(--signal)' }}>
+            {art}
+            <button type="button" className="round white drawer-close" onClick={onClose} aria-label="Close"><Icon name="X" size={16} /></button>
+            {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+            <h2>{title}</h2>
+          </div>
+          <div className="drawer-body">{children}</div>
+          {footer && <div className="drawer-foot">{footer}</div>}
+        </aside>
+      </Presence>
+    </>,
     document.body,
   )
 }

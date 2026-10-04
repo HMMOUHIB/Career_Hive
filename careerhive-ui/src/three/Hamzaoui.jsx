@@ -15,7 +15,8 @@ const HEIGHT = 3.4 // badge diameter, close to the other mascots' footprint
 const CENTER_Y = 0.25 // concentric with Mascot's vortex, which then rings it like a halo
 const ENTER = 1.1 // seconds for the entrance spin
 const EYE_TRAVEL = [0.08, 0.06] // how far the eyes shift toward the cursor, in model units (the badge is ~4 across)
-const FROST = new THREE.Color('#f2f7ff') // on the blue frost hero the blue badge would vanish: it turns white there
+// the badge takes the theme: warm white against the vermilion vortex on dark, vermilion on light paper
+const TINT = { dark: new THREE.Color('#f3e9e4'), light: new THREE.Color('#d8402b') }
 
 const easeOut = (x) => 1 - (1 - x) ** 3
 const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2)
@@ -62,7 +63,7 @@ function buildBadge(scene) {
   const size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3())
   const scale = HEIGHT / size.y
   return {
-    root, body, eyes, rest, clusters, blue: body.material.color.clone(),
+    root, body, eyes, rest, clusters,
     fit: { scale, offset: center.multiplyScalar(-scale).toArray(), radius: (Math.max(size.x, size.y) * scale) / 2 },
     dispose() { body.material.dispose(); eyes.geometry.dispose() },
   }
@@ -145,9 +146,9 @@ export default function Hamzaoui({ stage }) {
     }
     pos.needsUpdate = true
 
-    // colour: the model's blue, white on the frost theme; glows while hovered
+    // colour: follows the theme; glows while hovered
     const m = badge.body.material
-    m.color.lerp(document.documentElement.dataset.theme === 'frost' ? FROST : badge.blue, ease(6))
+    m.color.lerp(TINT[document.documentElement.dataset.theme] ?? TINT.dark, ease(6))
     m.emissive.copy(m.color)
     m.emissiveIntensity = s.face * 0.35
   })

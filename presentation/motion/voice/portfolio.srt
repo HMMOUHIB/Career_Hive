@@ -1,0 +1,55 @@
+1
+00:00:00,350 --> 00:00:02,338
+Every career starts with one step.
+
+2
+00:00:04,950 --> 00:00:06,678
+Your career. Your next move.
+
+3
+00:00:07,300 --> 00:00:10,179
+Spreadsheets. Email threads. Side chats.
+
+4
+00:00:10,300 --> 00:00:12,088
+Growth gets lost in between.
+
+5
+00:00:12,350 --> 00:00:14,932
+CareerHive puts every step in one place.
+
+6
+00:00:16,950 --> 00:00:19,707
+Learn with formations and real course content.
+
+7
+00:00:19,850 --> 00:00:21,775
+Progress follows what you finish.
+
+8
+00:00:21,950 --> 00:00:24,976
+HR forwards it. Your manager decides.
+
+9
+00:00:26,750 --> 00:00:27,865
+Upload a CV.
+
+10
+00:00:28,000 --> 00:00:30,578
+The coach reads it, and finds your next step.
+
+11
+00:00:31,500 --> 00:00:33,776
+See your skills, and your team, at a glance.
+
+12
+00:00:36,050 --> 00:00:38,994
+Under the hood: React, Express, MySQL.
+
+13
+00:00:39,100 --> 00:00:41,223
+Live updates, tested end to end.
+
+14
+00:00:41,350 --> 00:00:43,419
+CareerHive. Grow on purpose.

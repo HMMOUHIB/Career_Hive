@@ -169,6 +169,8 @@ function lookEyes(eyes, target, away) {
   pos.needsUpdate = true
 }
 
+const boxes = new WeakMap() // loaded GLB scene → its rig's bounding box
+
 /** Clone the cached GLB and turn it into a rig we can pose every frame. */
 function buildRig(scene) {
   const root = cloneRig(scene)
@@ -179,6 +181,15 @@ function buildRig(scene) {
 
   const bones = {}
   root.traverse((o) => { if (o.isBone) bones[o.name.replace(/_\d+$/, '')] = o }) // "upper_arm.L_27" loads as "upper_armL_27"
+  // every body part is bound to the same skin, but loads with its own copy of the skeleton: share one, so the bone
+  // texture is uploaded once a frame instead of once per part (integrated GPUs stall on each upload)
+  let skeleton
+  root.traverse((o) => {
+    if (!o.isSkinnedMesh) return
+    const same = skeleton && o.skeleton.bones.length === skeleton.bones.length && o.skeleton.bones.every((b, i) => b === skeleton.bones[i])
+    if (same) o.skeleton = skeleton
+    else skeleton ??= o.skeleton
+  })
 
   const coatBones = Object.keys(COAT).map((k) => bones[k])
   const segments = Object.entries(COAT).map(([a, b]) => [bones[a].getWorldPosition(new THREE.Vector3()), bones[b].getWorldPosition(new THREE.Vector3())])
@@ -213,7 +224,9 @@ function buildRig(scene) {
   const arm = bones.upper_armL
   const restAim = arm.parent.worldToLocal(gun.getWorldPosition(new THREE.Vector3())).sub(arm.position).normalize()
 
-  const box = new THREE.Box3().setFromObject(root)
+  // the box runs every skinned vertex through its bones (~¼ s) and comes out the same each time: once per loaded model
+  let box = boxes.get(scene)
+  if (!box) boxes.set(scene, (box = new THREE.Box3().setFromObject(root)))
   const size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3())
   const scale = Math.min(HEIGHT / size.y, 4.4 / size.x)
   const hips = bones.spine.getWorldPosition(new THREE.Vector3())

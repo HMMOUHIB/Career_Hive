@@ -102,7 +102,8 @@ export default function Profile() {
     const f = e.target.files?.[0]
     e.target.value = ''
     if (!f) return
-    const data = await imageToBase64(f, key === 'coverPhoto' ? 1400 : 512)
+    // avatars show at 112px at most and ride along in every people list the API sends: 320px stays sharp on 3x screens
+    const data = await imageToBase64(f, key === 'coverPhoto' ? 1400 : 320)
     await actions.updateProfile({ [key]: data }).catch(() => {})
   }
   const save = async (e) => {

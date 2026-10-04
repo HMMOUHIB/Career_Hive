@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react'
 import { api, auth, captureOAuthToken, DEMO } from '../api/client'
-import { autoReplies } from '../data/mock'
 import { fromServer } from './notifications'
 
 /* Promotion gate — change these to match your company's policy. */
@@ -11,9 +10,16 @@ const Ctx = createContext(null)
 const readPrefs = () => { try { return JSON.parse(localStorage.getItem('ch_chat_prefs') || '{}') } catch { return {} } }
 const readJSON = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? d } catch { return d } }
 const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch { /* ignore */ } }
-// The app opens in the blue Frost theme; a theme you pick is remembered (new key, so older saved picks start over on Frost).
-const THEME_KEY = 'ch_theme_v3' // v3: every browser starts again in Frost, then keeps its own choice
-const readTheme = () => { try { return localStorage.getItem(THEME_KEY) || 'frost' } catch { return 'frost' } }
+// Two themes: dark (default) and light. A pick is remembered; an older saved pick carries over (Light stays Light,
+// the retired Dark "ember" and Frost themes become dark).
+const THEME_KEY = 'ch_theme_v4'
+export const THEMES = [{ id: 'dark', label: 'Dark', icon: 'Moon' }, { id: 'light', label: 'Light', icon: 'Sun' }]
+const readTheme = () => {
+  try {
+    const t = localStorage.getItem(THEME_KEY) ?? localStorage.getItem('ch_theme_v3')
+    return t === 'light' ? 'light' : 'dark'
+  } catch { return 'dark' }
+}
 
 const initial = {
   status: 'idle', user: null, dashboard: null,
@@ -72,9 +78,8 @@ function reducer(s, a) {
 const num = (d) => parseFloat(String(d ?? '').replace(',', '.')) || 0
 export const fullName = (u) => [u?.firstName, u?.lastName].filter(Boolean).join(' ')
 export const roleLabel = { student: 'Employee', manager: 'Manager', hr: 'HR', admin: 'Admin' }
-/** The theme buttons (top bar, sign-in page) cycle Frost → Dark → Light → Frost; this is the one they switch to next. */
-const THEME_CYCLE = [{ id: 'frost', label: 'Frost', icon: 'Snowflake' }, { id: 'ember', label: 'Dark', icon: 'Moon' }, { id: 'light', label: 'Light', icon: 'Sun' }]
-export const nextTheme = (id) => THEME_CYCLE[(THEME_CYCLE.findIndex((t) => t.id === id) + 1) % THEME_CYCLE.length]
+/** The theme button (top bar, sign-in page) shows the theme it switches to. */
+export const nextTheme = (id) => THEMES[(THEMES.findIndex((t) => t.id === id) + 1) % THEMES.length]
 
 export function StoreProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initial)
@@ -310,7 +315,8 @@ export function StoreProvider({ children }) {
       dispatch({ type: 'chat', cid, msg: { id: msg.id, text: msg.text, sender: 'me', time: msg.time, replyTo } })
       if (DEMO) {
         timers.current.push(setTimeout(() => set({ typing: cid }), 700))
-        timers.current.push(setTimeout(() => {
+        timers.current.push(setTimeout(async () => {
+          const { autoReplies } = await import('../data/mock') // demo-only data stays out of the real app's bundle
           set({ typing: null })
           dispatch({ type: 'chat', cid, msg: { id: Date.now(), text: autoReplies[Math.floor(Math.random() * autoReplies.length)], sender: 'contact', at: Date.now(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) } })
         }, 2300))
@@ -384,3 +390,5 @@ export const colorFor = (s = '') => palette[[...s].reduce((n, c) => n + c.charCo
 const iconMap = [[/contain|kube|docker/i, 'Container'], [/cloud|aws|gcp|azure/i, 'Cloud'], [/auto|terraform|iac|ci|cd|devops/i, 'GitBranch'], [/sre|observ|monitor/i, 'Activity'], [/lead|manage/i, 'Crown'], [/secur|network/i, 'Shield'], [/data|sql|analy/i, 'ChartLine'], [/front|web|react|design/i, 'Layers']]
 export const iconFor = (text = '') => iconMap.find(([re]) => re.test(text))?.[1] ?? 'BookOpen'
 export const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—')
+/** Axis labels for the weekly charts, oldest first. Kept here so pages can build chart data without loading recharts. */
+export const weekLabels = (n) => Array.from({ length: n }, (_, i) => (i === n - 1 ? 'This wk' : `${n - 1 - i}w ago`))

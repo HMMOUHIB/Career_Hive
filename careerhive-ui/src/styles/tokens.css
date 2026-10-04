@@ -1,0 +1,216 @@
+/* =========================================================
+   CareerHive design tokens.
+
+   Two themes from one set of semantic tokens:
+     dark  — "Sumi": warm ink, vermilion signal (default)
+     light — "Washi": warm paper, deeper vermilion
+
+   Components read the semantic tokens (--background … --danger).
+   The block at the end of each theme maps the older names (--page, --panel, --text …)
+   onto them so pages that haven't been moved over yet follow the system.
+   ========================================================= */
+
+:root {
+  /* ---- type families: one UI family, one display family, a kanji face for the section marks only ---- */
+  --font-ui: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Onest', system-ui, sans-serif;
+  --font-kanji: 'Shippori Mincho B1', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+
+  /* ---- type scale (fluid where it matters) ---- */
+  --text-display: clamp(2.75rem, 1.7rem + 4.2vw, 5.25rem);
+  --text-h1: clamp(1.875rem, 1.45rem + 1.7vw, 2.875rem);
+  --text-h2: clamp(1.25rem, 1.12rem + .55vw, 1.625rem);
+  --text-h3: 1.0625rem;
+  --text-body-lg: 1.0625rem;
+  --text-body: .9375rem;
+  --text-body-sm: .8125rem;
+  --text-caption: .75rem;
+  --text-label: .6875rem;
+  --text-nav: .875rem;
+
+  --lh-tight: 1.04;
+  --lh-snug: 1.2;
+  --lh-body: 1.55;
+  --track-display: -.045em;
+  --track-heading: -.03em;
+  --track-label: .14em;
+
+  /* ---- spacing (4px grid) ---- */
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --gutter: clamp(1rem, .6rem + 1.6vw, 2rem); /* page side padding */
+
+  /* ---- radii: tight and consistent ---- */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* ---- layout ---- */
+  --nav-width: 248px;
+  --nav-width-rail: 72px;
+  --topbar-height: 64px;
+  --content-max: 1360px;
+
+  /* ---- motion (CSS side; GSAP uses src/motion/tokens.js with the same values) ---- */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --dur-fast: .15s;
+  --dur-base: .25s;
+  --dur-slow: .5s;
+
+  /* ---- layers ---- */
+  --z-nav: 30;
+  --z-topbar: 20;
+  --z-scrim: 55;
+  --z-drawer: 56;
+  --z-modal: 60;
+  --z-toast: 80;
+  --z-cursor: 10000;
+
+  /* legacy names that don't depend on the theme */
+  --f-display: var(--font-display);
+  --f-body: var(--font-ui);
+  --f-mono: var(--font-ui);
+  --f-kanji: var(--font-kanji);
+  --ease: var(--ease-out);
+}
+
+/* ---------- dark · Sumi ---------- */
+:root,
+[data-theme='dark'] {
+  --background: #0b0809;
+  --surface: #131011;
+  --surface-sunken: #0f0c0d;
+  --surface-elevated: #1a1516;
+  --surface-hover: #221b1d;
+  --foreground: #f6efec;
+  --foreground-muted: #b5a6a1;
+  --foreground-dim: #8f807c;
+  --border: rgb(255 238 232 / .08);
+  --border-strong: rgb(255 238 232 / .16);
+
+  --accent: #ff5b45;
+  --accent-strong: #ff7a63;
+  --accent-ink: #1a0806;
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
+  --accent-secondary: #ffa66b;
+  --highlight: #f3d58a;         /* a restrained gold, for "ready" / premium signals */
+  --highlight-ink: #2a1f06;
+
+  --success: #4fd1a0;
+  --warning: #f0c05a;
+  --danger: #ff6b6b;
+
+  --signal: linear-gradient(135deg, #d9402e 0%, #8c231e 52%, #2b0d0c 100%); /* the one signature surface (hero, covers) */
+  --signal-ink: #fff7f4;
+  --scrim: rgb(5 2 3 / .62);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / .4);
+  --shadow-md: 0 8px 24px -10px rgb(0 0 0 / .7);
+  --shadow-lg: 0 28px 70px -24px rgb(0 0 0 / .85);
+  --highlight-line: inset 0 1px 0 rgb(255 238 232 / .05); /* a faint top edge: depth without a heavy shadow */
+  --glow: rgb(255 91 69 / .4);
+  --glyph: rgb(255 200 190 / .045);
+
+  --chart-a: #ff5b45;
+  --chart-b: #5aa9e6;
+  --orb-a: #ff5a4e;
+  --orb-b: #7b2cff;
+  color-scheme: dark;
+
+  /* legacy names */
+  --page: var(--background);
+  --frame: var(--background);
+  --panel: var(--surface);
+  --panel-2: var(--surface-sunken);
+  --raise: var(--surface-hover);
+  --line: var(--border);
+  --text: var(--foreground);
+  --muted: var(--foreground-muted);
+  --dim: var(--foreground-dim);
+  --accent-2: var(--accent-secondary);
+  --pill: var(--highlight);
+  --pill-ink: var(--highlight-ink);
+  --hero: var(--signal);
+  --hero-ink: var(--signal-ink);
+  --good: var(--success);
+  --warn: var(--warning);
+  --bad: var(--danger);
+  --shadow: var(--shadow-lg);
+  --elev-1: var(--highlight-line), var(--shadow-sm);
+  --elev-2: var(--highlight-line), var(--shadow-md);
+  --logo-drop: drop-shadow(0 0 14px rgb(255 91 69 / .35));
+}
+
+/* ---------- light · Washi ---------- */
+[data-theme='light'] {
+  --background: #f4efe9;
+  --surface: #fffdfb;
+  --surface-sunken: #f7f1eb;
+  --surface-elevated: #ffffff;
+  --surface-hover: #f1e9e2;
+  --foreground: #1c1210;
+  --foreground-muted: #6b5a55;
+  --foreground-dim: #7d6d68;
+  --border: rgb(60 28 20 / .1);
+  --border-strong: rgb(60 28 20 / .2);
+
+  --accent: #d8402b;
+  --accent-strong: #bd3320;
+  --accent-ink: #ffffff;
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
+  --accent-secondary: #e0703f;
+  --highlight: #f3dd9c;
+  --highlight-ink: #3a2a08;
+
+  --success: #138a5b;
+  --warning: #a86d05;
+  --danger: #d03030;
+
+  --signal: linear-gradient(135deg, #e0553e 0%, #b8301f 55%, #6e1d14 100%);
+  --signal-ink: #fff7f4;
+  --scrim: rgb(28 18 16 / .4);
+  --shadow-sm: 0 1px 2px rgb(60 28 20 / .08);
+  --shadow-md: 0 10px 28px -14px rgb(60 28 20 / .28);
+  --shadow-lg: 0 30px 70px -28px rgb(60 28 20 / .4);
+  --highlight-line: inset 0 1px 0 rgb(255 255 255 / .7);
+  --glow: rgb(216 64 43 / .28);
+  --glyph: rgb(216 64 43 / .06);
+
+  --chart-a: #d8402b;
+  --chart-b: #2f7bc8;
+  --orb-a: #ff5a4e;
+  --orb-b: #7b2cff;
+  color-scheme: light;
+
+  --page: var(--background);
+  --frame: var(--background);
+  --panel: var(--surface);
+  --panel-2: var(--surface-sunken);
+  --raise: var(--surface-hover);
+  --line: var(--border);
+  --text: var(--foreground);
+  --muted: var(--foreground-muted);
+  --dim: var(--foreground-dim);
+  --accent-2: var(--accent-secondary);
+  --pill: var(--highlight);
+  --pill-ink: var(--highlight-ink);
+  --hero: var(--signal);
+  --hero-ink: var(--signal-ink);
+  --good: var(--success);
+  --warn: var(--warning);
+  --bad: var(--danger);
+  --shadow: var(--shadow-lg);
+  --elev-1: var(--highlight-line), var(--shadow-sm);
+  --elev-2: var(--highlight-line), var(--shadow-md);
+  --logo-drop: drop-shadow(0 6px 10px rgb(216 64 43 / .3));
+}

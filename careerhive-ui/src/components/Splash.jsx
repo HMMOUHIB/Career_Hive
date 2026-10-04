@@ -1,14 +1,14 @@
-import { motion } from 'framer-motion'
 import Logo, { BrandTitle } from './Logo'
 
-/** The loading screen: the Hamzaoui emblem turning like a coin over the animated title; fades out onto the app. */
+/** The loading screen: the emblem turning like a coin over the title. App fades it out onto the workspace. */
 export default function Splash({ theme, onReady }) {
   return (
-    <motion.div className="splash" role="status" aria-label="Loading CareerHive" exit={{ opacity: 0, scale: 1.03 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
-      <span className="splash-glow" />
+    <div className="splash" role="status" aria-label="Loading CareerHive">
+      <span className="splash-light" aria-hidden="true" />
       <Logo theme={theme} spin className="splash-mark" onReady={onReady} />
       <BrandTitle />
-      <span className="splash-bar"><i /></span>
-    </motion.div>
+      <span className="splash-bar" aria-hidden="true"><i /></span>
+      <span className="splash-note">Waking up the server — after a quiet spell this takes up to a minute.</span>
+    </div>
   )
 }

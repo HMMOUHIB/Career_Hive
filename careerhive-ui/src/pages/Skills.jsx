@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MasteryRadar, weekLabels, WeeklyBars } from '../components/Charts'
+import { MasteryRadar, WeeklyBars } from '../components/Charts'
 import { SkillIcon } from '../components/SkillChip'
 import { Bar, Counter, Icon, Page, rise, Reveal } from '../components/ui'
-import { useDerived, useStore } from '../store/store'
+import { useDerived, useStore, weekLabels } from '../store/store'
 import { Empty } from './Dashboard'
 
 const TARGET = 70

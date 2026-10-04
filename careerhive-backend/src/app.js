@@ -52,6 +52,10 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     message = 'Request too large (photos must be under 6 MB).'
   } else if (err.type === 'entity.parse.failed') {
     message = 'Malformed JSON body.'
+  } else if (['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'EHOSTUNREACH', 'PROTOCOL_CONNECTION_LOST'].includes(err.code)) {
+    status = 503 // the database is unreachable (stopped, or Aiven's free plan powered it off)
+    message = 'The database is offline right now. Please try again in a few minutes.'
+    console.error(`[${req.method} ${req.originalUrl}] database unreachable: ${err.code}`)
   } else if (status >= 500) {
     console.error(`[${req.method} ${req.originalUrl}]`, err)
     message = 'Something went wrong on our side. Please try again.'

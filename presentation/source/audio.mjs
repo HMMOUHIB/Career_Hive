@@ -68,6 +68,13 @@ export function writeWav(file, { length, cues }) {
     let hp = 0, prev = 0
     for (let i = 0; i < 0.06 * SR; i++) { const x = rand(); hp = 0.85 * (hp + x - prev); prev = x; const v = hp * Math.exp(-i / SR / 0.025) * 0.025; add(at(t0) + i, v * 0.8, v) }
   }
+  // gaps: the music drops out just before a hit (optional cue), so the impact lands in silence
+  for (const [a, b] of cues.gaps ?? []) {
+    for (let i = Math.max(0, at(a - 0.05)); i < Math.min(N, at(b)); i++) {
+      const t = i / SR, g = t < a ? (a - t) / 0.05 : 0
+      L[i] *= g; R[i] *= g
+    }
+  }
   // sound design
   const noiseSweep = (t0, dur, f0, f1, amp, up = true) => {
     let y = 0
@@ -92,6 +99,17 @@ export function writeWav(file, { length, cues }) {
     for (const [dt, f] of [[0, 880], [0.075, 1320]]) for (let i = 0; i < 0.12 * SR; i++) { const t = i / SR; add(at(t0 + dt) + i, Math.sin(6.2832 * f * t) * Math.exp(-t / 0.05) * 0.12) }
   }
   for (const t0 of cues.ticks) for (let i = 0; i < 0.08 * SR; i++) { const t = i / SR; add(at(t0) + i, Math.sin(6.2832 * 1250 * t) * Math.exp(-t / 0.025) * 0.09) }
+  // logo chime (optional cue): a soft FM bell on C – E – G, notes a few ms apart
+  for (const t0 of cues.bells ?? []) {
+    for (const [k, n] of [72, 76, 79, 84].entries()) {
+      const f = midi(n), pan = (k - 1.5) * 0.25
+      for (let i = 0; i < 2.6 * SR; i++) {
+        const t = i / SR, env = Math.min(1, t / 0.004) * Math.exp(-t / 0.9)
+        const v = Math.sin(6.2832 * f * t + 1.6 * Math.exp(-t / 0.35) * Math.sin(6.2832 * f * 2.76 * t)) * env * 0.06
+        add(at(t0 + k * 0.035) + i, v * (1 - pan), v * (1 + pan))
+      }
+    }
+  }
 
   // master: fades, soft clip, normalise to -1 dBFS
   let peak = 0

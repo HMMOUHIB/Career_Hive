@@ -14,6 +14,7 @@ video production plan. Everything shares one visual system: the app's own fonts,
 | `social/github/` | README hero 1280×640, banner, 4 feature graphics, architecture 1600×900 (used by the repository README) |
 | `social/portfolio/` | thumbnail, hero, case-study preview, technology graphic |
 | `video/` | **`CareerHive-Film-1080p.mp4`** (50 s, 1920×1080, 30 fps, H.264 + AAC) and its poster; storyboard, shot list, assets, editing plan, sound, and 12 transparent overlays |
+| `motion/` | **the motion system**: four kinetic product films (16:9 master 60 s, portfolio 48 s, teaser 25.5 s; 9:16 social 24 s), thumbnails, and the motion design docs; see [`motion/README.md`](motion/README.md) |
 | `assets/screenshots/` | the real screens (built-in demo data), desktop / tablet / mobile, plus section backgrounds |
 | `source/` | the generator: `brand.css`, `lib.mjs`, `book.mjs`, `kit.mjs`, `build.mjs`, `capture.mjs`, `content.json`; the film: `film.mjs`, `film.css`, `audio.mjs` |
 | `PLAN.md` · `QC.md` | the analysis and plan · the final audit |

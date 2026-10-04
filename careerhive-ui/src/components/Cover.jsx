@@ -72,7 +72,7 @@ export default function Cover({ item, variant = 'card', children, className = ''
       </svg>
       <div className="cover-dots" aria-hidden />
       <div className="cover-ghost" aria-hidden><TechLogo icon={icon} size={big * 2.1} color="#ffffff" /></div>
-      <div className="cover-logo" style={{ filter: `drop-shadow(0 10px 28px ${p.glow}aa)` }}><TechLogo icon={icon} size={big} color={p.logo} /></div>
+      <div className="cover-logo" style={{ '--glow': `${p.glow}aa` }}><TechLogo icon={icon} size={big} color={p.logo} /></div>
       <div className="cover-shine" aria-hidden />
       {children}
     </div>

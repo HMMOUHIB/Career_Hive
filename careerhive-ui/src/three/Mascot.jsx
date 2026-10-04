@@ -14,6 +14,7 @@ import { ContactShadows, RoundedBox } from '@react-three/drei'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Component, lazy, Suspense, useMemo, useRef } from 'react'
 import * as THREE from 'three'
+import { FrameCap, renderer, RESIZE } from './renderer'
 
 const MODELS = { mouhib: lazy(() => import('./Mouhib')), hamzaoui: lazy(() => import('./Hamzaoui')) }
 
@@ -295,11 +296,18 @@ class ModelBoundary extends Component {
   render() { return this.state.failed ? this.props.fallback : this.props.children }
 }
 
-export default function Mascot({ model = 'mouhib', variant = 'wave', accent = '#e8453c', shadow = true, distance = 7.2, vortex }) {
+const GL = renderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
+
+/**
+ * `active` pauses rendering while the stage is off screen (the parent watches visibility);
+ * `still` (reduced motion) renders on demand only, so nothing idles in a loop.
+ */
+export default function Mascot({ model = 'mouhib', variant = 'wave', accent = '#e8453c', shadow = true, distance = 7.2, vortex, active = true, still = false }) {
   const Model = MODELS[model]
   const stage = useRef({ arrivedAt: null }) // clock time the mascot is fully in view; the vortex waits for it
   return (
-    <Canvas flat dpr={[1, 1.8]} camera={{ position: [0, 0.2, distance], fov: 36 }} gl={{ antialias: true, alpha: true }}>
+    <Canvas flat dpr={[1, 1.8]} frameloop={still || active ? 'demand' : 'never'} camera={{ position: [0, 0.2, distance], fov: 36 }} gl={GL} resize={RESIZE}>
+      {active && !still && <FrameCap />}
       <hemisphereLight args={['#fff8ee', '#d9b38c', 1.05]} />
       <ambientLight intensity={0.25} />
       <directionalLight position={[3, 5, 4]} intensity={1.7} color="#fff6ea" />

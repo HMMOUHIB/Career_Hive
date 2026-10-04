@@ -1,12 +1,11 @@
 // Registered accounts, as the workspace owner manages them: choose who is an employee, a manager or HR, or delete an
 // account. Used by the dashboard's Accounts panel and the People & roles page. The backend allows this for the owner only.
-import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { timeAgo, toMs } from '../store/notifications'
 import { colorFor, useStore } from '../store/store'
-import { Avatar, Icon, rise, Tabs } from './ui'
+import { Avatar, Icon, Tabs } from './ui'
 
 const ROLES = [{ value: 'student', label: 'Employee' }, { value: 'manager', label: 'Manager' }, { value: 'hr', label: 'HR' }]
 const ROLE_NAME = { student: 'an employee', manager: 'a manager', hr: 'HR', admin: 'an admin' }
@@ -76,7 +75,7 @@ export function AccountRow({ person: p, busy, onRole, onDelete, compact, idPrefi
         </div>
       ) : (
         <div className="person-actions">
-          <Tabs id={`${idPrefix}-role-${p.id}`} value={p.role} onChange={(role) => onRole(p, role)} items={ROLES} />
+          <Tabs label={`Role for ${p.name}`} value={p.role} onChange={(role) => onRole(p, role)} items={ROLES} />
           <button className="res-tool" onClick={() => setConfirm(true)} aria-label={`Delete ${p.name}`} title="Delete account"><Icon name="Trash2" size={15} draw={false} /></button>
         </div>
       )}
@@ -89,10 +88,10 @@ export function AccountsPanel({ limit = 6 }) {
   const { people, busy, changeRole, remove, count } = useAccounts()
   const shown = (people ?? []).slice(0, limit)
   return (
-    <motion.section variants={rise} className="card accounts-panel">
+    <section data-reveal className="card accounts-panel" aria-labelledby="accounts-title">
       <div className="h-row">
         <div>
-          <h2 style={{ fontSize: 16 }}>Accounts</h2>
+          <h2 id="accounts-title" className="t-h3">Accounts</h2>
           <p className="accounts-sub">
             {people ? `${count('student')} employees · ${count('manager')} managers · ${count('hr')} HR` : 'Loading…'} — new sign-ups start as employees; choose who is HR or a manager.
           </p>
@@ -101,6 +100,6 @@ export function AccountsPanel({ limit = 6 }) {
       </div>
       {shown.map((p) => <AccountRow key={p.id} person={p} busy={busy} onRole={changeRole} onDelete={remove} compact idPrefix="dash" />)}
       {people && people.length > limit && <Link to="/people" className="nlink" style={{ marginTop: 6 }}>See the other {people.length - limit} accounts <Icon name="ArrowRight" size={14} /></Link>}
-    </motion.section>
+    </section>
   )
 }

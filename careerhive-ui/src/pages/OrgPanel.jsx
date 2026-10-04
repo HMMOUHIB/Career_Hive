@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion'
+import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
-import { weekLabels, WeeklyBars } from '../components/Charts'
 import { SkillBadge } from '../components/SkillChip'
 import { Avatar, CardHead, Counter, Icon, IconTile, rise } from '../components/ui'
 import { skillLabel } from '../data/techIcons'
-import { colorFor, fmtDate } from '../store/store'
+import { colorFor, fmtDate, weekLabels } from '../store/store'
+
+// recharts is the largest library in the app: the dashboard loads it only for staff, once this panel shows
+const WeeklyBars = lazy(() => import('../components/Charts').then((m) => ({ default: m.WeeklyBars })))
 
 // each status keeps its colour and an icon, so it never reads by colour alone
 const STATUS = [
@@ -58,7 +61,9 @@ export default function OrgPanel({ org, role }) {
       <div className="org-grid">
         <motion.div variants={rise} className="card">
           <CardHead icon="ChartColumn" title="Weekly activity" sub="Enrollments and certificates, last 8 weeks" />
-          <WeeklyBars data={trend} series={[{ key: 'enrollments', name: 'Enrollments' }, { key: 'certificates', name: 'Certificates' }]} />
+          <Suspense fallback={<div className="skeleton" style={{ height: 220 }} />}>
+            <WeeklyBars data={trend} series={[{ key: 'enrollments', name: 'Enrollments' }, { key: 'certificates', name: 'Certificates' }]} />
+          </Suspense>
         </motion.div>
 
         <motion.div variants={rise} className="card">
