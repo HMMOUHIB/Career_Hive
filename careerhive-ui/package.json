@@ -8,12 +8,9 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "build:single": "vite build --mode single --outDir dist-single",
-    "dev:demo": "vite --mode demo",
-    "icons": "node scripts/icons.mjs"
+    "build:single": "vite build --mode single --outDir dist-single"
   },
   "dependencies": {
-    "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.1",
     "framer-motion": "^13.4.4",

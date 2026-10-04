@@ -12,7 +12,7 @@
  */
 import { ContactShadows, RoundedBox } from '@react-three/drei'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Component, lazy, Suspense, useMemo, useRef } from 'react'
+import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { FrameCap, renderer, RESIZE } from './renderer'
 
@@ -296,18 +296,23 @@ class ModelBoundary extends Component {
   render() { return this.state.failed ? this.props.fallback : this.props.children }
 }
 
-const GL = renderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
+const GL = renderer({ antialias: true, alpha: true })
 
-/**
- * `active` pauses rendering while the stage is off screen (the parent watches visibility);
- * `still` (reduced motion) renders on demand only, so nothing idles in a loop.
- */
-export default function Mascot({ model = 'mouhib', variant = 'wave', accent = '#e8453c', shadow = true, distance = 7.2, vortex, active = true, still = false }) {
+/** Renders only while on screen (scrolled away, the WebGL loop stops), at most ~72 frames a second. */
+export default function Mascot({ model = 'mouhib', variant = 'wave', accent = '#e8453c', shadow = true, distance = 7.2, vortex }) {
   const Model = MODELS[model]
   const stage = useRef({ arrivedAt: null }) // clock time the mascot is fully in view; the vortex waits for it
+  const canvas = useRef(null)
+  const [visible, setVisible] = useState(true)
+  useEffect(() => {
+    if (!canvas.current) return
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { rootMargin: '80px' })
+    io.observe(canvas.current)
+    return () => io.disconnect()
+  }, [])
   return (
-    <Canvas flat dpr={[1, 1.8]} frameloop={still || active ? 'demand' : 'never'} camera={{ position: [0, 0.2, distance], fov: 36 }} gl={GL} resize={RESIZE}>
-      {active && !still && <FrameCap />}
+    <Canvas ref={canvas} flat dpr={[1, 1.8]} frameloop={visible ? 'demand' : 'never'} camera={{ position: [0, 0.2, distance], fov: 36 }} gl={GL} resize={RESIZE}>
+      {visible && <FrameCap />}
       <hemisphereLight args={['#fff8ee', '#d9b38c', 1.05]} />
       <ambientLight intensity={0.25} />
       <directionalLight position={[3, 5, 4]} intensity={1.7} color="#fff6ea" />

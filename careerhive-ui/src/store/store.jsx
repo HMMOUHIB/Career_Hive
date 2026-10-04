@@ -10,16 +10,10 @@ const Ctx = createContext(null)
 const readPrefs = () => { try { return JSON.parse(localStorage.getItem('ch_chat_prefs') || '{}') } catch { return {} } }
 const readJSON = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? d } catch { return d } }
 const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch { /* ignore */ } }
-// Two themes: dark (default) and light. A pick is remembered; an older saved pick carries over (Light stays Light,
-// the retired Dark "ember" and Frost themes become dark).
-const THEME_KEY = 'ch_theme_v4'
-export const THEMES = [{ id: 'dark', label: 'Dark', icon: 'Moon' }, { id: 'light', label: 'Light', icon: 'Sun' }]
-const readTheme = () => {
-  try {
-    const t = localStorage.getItem(THEME_KEY) ?? localStorage.getItem('ch_theme_v3')
-    return t === 'light' ? 'light' : 'dark'
-  } catch { return 'dark' }
-}
+// The app opens in the blue Frost theme; a theme you pick is remembered (new key, so older saved picks start over on Frost).
+// v5: every browser starts again in Frost (a short-lived redesign saved dark/light picks under v4), then keeps its own choice
+const THEME_KEY = 'ch_theme_v5'
+const readTheme = () => { try { return localStorage.getItem(THEME_KEY) === 'ember' ? 'ember' : 'frost' } catch { return 'frost' } } // two themes: Frost and Dark
 
 const initial = {
   status: 'idle', user: null, dashboard: null,
@@ -78,8 +72,9 @@ function reducer(s, a) {
 const num = (d) => parseFloat(String(d ?? '').replace(',', '.')) || 0
 export const fullName = (u) => [u?.firstName, u?.lastName].filter(Boolean).join(' ')
 export const roleLabel = { student: 'Employee', manager: 'Manager', hr: 'HR', admin: 'Admin' }
-/** The theme button (top bar, sign-in page) shows the theme it switches to. */
-export const nextTheme = (id) => THEMES[(THEMES.findIndex((t) => t.id === id) + 1) % THEMES.length]
+/** The theme buttons (top bar, sign-in page) cycle Frost → Dark → Light → Frost; this is the one they switch to next. */
+const THEME_CYCLE = [{ id: 'frost', label: 'Frost', icon: 'Snowflake' }, { id: 'ember', label: 'Dark', icon: 'Moon' }]
+export const nextTheme = (id) => THEME_CYCLE[(THEME_CYCLE.findIndex((t) => t.id === id) + 1) % THEME_CYCLE.length]
 
 export function StoreProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initial)

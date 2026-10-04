@@ -1,6 +1,0 @@
-/* Mouse cursor: the system one. Clickable things use --cursor-hot (the hand) and text fields keep the caret. */
-:root { --cursor: auto; --cursor-hot: pointer; }
-body { cursor: var(--cursor); }
-a[href], select, summary, label[for], input:is([type='checkbox'], [type='radio']) { cursor: var(--cursor-hot); }
-button:disabled { cursor: var(--cursor); }
-input:not([type='checkbox'], [type='radio'], [type='range'], [type='button'], [type='submit'], [type='file']), textarea, [contenteditable='true'] { cursor: text; }

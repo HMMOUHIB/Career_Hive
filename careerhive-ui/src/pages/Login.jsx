@@ -1,10 +1,9 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { siGithub } from 'simple-icons'
 import { api, apiAwake, DEMO, wake } from '../api/client'
 import Logo, { BrandTitle } from '../components/Logo'
 import { Icon, Tabs } from '../components/ui'
-import { DUR, EASE, gsap, reducedMotion, useGSAP } from '../motion/gsap'
-import Presence from '../motion/Presence'
 import { nextTheme, useStore } from '../store/store'
 import { softwareGL } from '../three/gpu'
 
@@ -35,18 +34,6 @@ const DEMO_ACCOUNTS = [
   { label: 'Manager', email: 'manager@careerhive.tn' },
 ]
 
-const TITLES = {
-  eyebrow: { login: 'Welcome back', signup: 'Create account', forgot: 'Forgot password', reset: 'Almost there' },
-  heading: { login: 'Sign in to your space', signup: 'Join your team', forgot: 'Reset your password', reset: 'Choose a new password' },
-  submit: { login: 'Sign in', signup: 'Create account', forgot: 'Send the reset link', reset: 'Save and sign in' },
-}
-
-/**
- * Sign in, sign up, forgot and reset password, social sign-in.
- * Motion — Purpose: the brand statement lands first, then the form comes forward.
- * Trigger: mount (one timeline); switching mode or showing "check your inbox" cross-fades the panel content.
- * Reduced motion: static.
- */
 export default function Login() {
   const { state, actions } = useStore()
   const [reset] = useState(resetCode)
@@ -60,31 +47,13 @@ export default function Login() {
   const [sent, setSent] = useState(null) // { kind: 'verify' | 'reset', email, warning? } → "check your inbox"
   const [cooldown, setCooldown] = useState(false)
   const [show, setShow] = useState(false)
-  const root = useRef(null)
-  const panel = useRef(null)
   const on = (k) => (e) => setForm({ ...form, [k]: e.target.value })
   const switchMode = (m) => { setMode(m); setError(null); setNotice(null); setUnconfirmed(false) }
-  const next = nextTheme(state.theme)
 
   // Returning from social sign-in or an emailed link: the store reads the result from the URL just after this page
   // first renders, so pick its message up when it arrives.
   useEffect(() => { if (state.authError) setError(state.authError) }, [state.authError])
   useEffect(() => { if (state.authNotice) setNotice(state.authNotice) }, [state.authNotice])
-
-  useGSAP(() => {
-    if (reducedMotion()) return
-    const tl = gsap.timeline({ defaults: { ease: EASE.out } })
-    tl.from('.auth-art', { autoAlpha: 0, duration: DUR.slow })
-      .from('.auth-headline h1 .line > span', { yPercent: 110, duration: DUR.slow, stagger: 0.08 }, 0.15)
-      .from('.auth-headline p, .auth-proof li', { autoAlpha: 0, y: 12, duration: DUR.base, stagger: 0.06 }, 0.45)
-      .from('.auth-panel-inner', { autoAlpha: 0, x: 24, duration: DUR.slow }, 0.25)
-  }, { scope: root })
-
-  // the panel content cross-fades when the mode changes or the inbox message shows
-  useGSAP(() => {
-    if (reducedMotion() || !panel.current) return
-    gsap.fromTo(panel.current, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: DUR.base, ease: EASE.out })
-  }, { dependencies: [sent?.kind, mode === 'forgot' || mode === 'reset'], revertOnUpdate: false })
 
   const submit = async (e) => {
     e.preventDefault()
@@ -117,7 +86,7 @@ export default function Login() {
     } catch (err) { setError(err.message) }
   }
 
-  // wait until the API is up before leaving, so a sleeping server shows our spinner instead of Render's holding page
+  // wait until the API is up before leaving, so a sleeping server shows our message instead of Render's holding page
   const oauth = async (p) => {
     const url = api.oauthUrl(p)
     if (!url) return setError('Social sign-in needs the real backend — set VITE_API_URL.')
@@ -132,33 +101,33 @@ export default function Login() {
   }
 
   return (
-    <div className="auth" ref={root}>
-      <section className="auth-art" aria-label="CareerHive">
-        <div className="auth-stage">{!softwareGL() && <Suspense fallback={null}><Mascot variant="wave" distance={8.4} vortex={state.theme === 'light' ? ['#ffc58a', '#ffffff'] : ['#ffb36b', '#ff5b45']} accent="#1c1210" still={reducedMotion()} /></Suspense>}</div>
-        <span className="glyph auth-glyph" aria-hidden="true">昇</span>
-        <div className="auth-brand">
-          <Logo theme={state.theme} tone="white" />
-          <div className="brand-text"><BrandTitle /><span className="brand-sub">Workspace</span></div>
-        </div>
-        <div className="auth-headline">
-          <h1><span className="line"><span>Grow on</span></span><span className="line"><span>purpose.</span></span></h1>
-          <p>Track your formations, earn certifications, and ask for the promotion when you have earned it.</p>
-          <ul className="auth-proof" role="list">
-            <li><Icon name="GraduationCap" size={16} />Formations with real progress</li>
-            <li><Icon name="ListChecks" size={16} />Promotion requirements, checked for you</li>
-            <li><Icon name="Compass" size={16} />A CV coach that maps your gaps</li>
-          </ul>
-        </div>
-      </section>
+    <div className="stage">
+      <div className="frame auth-frame">
+        <section className="auth-art">
+          <div className="auth-canvas mascot-stage">{!softwareGL() && <Suspense fallback={null}><Mascot variant="wave" distance={8.4} vortex={state.theme === 'frost' ? ['#8fe3ff', '#5b7cff'] : ['#ffd166', '#ff5e8a']} accent={state.theme === 'frost' ? '#2f5bff' : '#1f2a44'} /></Suspense>}</div>
+          <span className="glyph" style={{ fontSize: 320, right: -40, bottom: -60, color: 'rgba(255,255,255,.07)' }}>昇</span>
+          <div className="auth-copy">
+            <div className="brand stacked start" style={{ padding: 0 }}>
+              <Logo theme={state.theme} tone="white" />
+              <BrandTitle />
+              <div className="brand-sub" style={{ color: 'rgba(255,255,255,.7)' }}>Workspace</div>
+            </div>
+            <div className="auth-headline">
+              <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
+                Grow on<br />purpose.
+              </motion.h1>
+              <p>Track your formations, earn certifications, and ask for the promotion when you have earned it.</p>
+            </div>
+          </div>
+        </section>
 
-      <section className="auth-panel">
-        <button type="button" className="icon-btn auth-theme" aria-label={`Switch to ${next.label} theme`} title={`${next.label} theme`} onClick={() => actions.setTheme(next.id)}>
-          <Icon name={next.icon} size={17} />
-        </button>
-        <div className="auth-panel-inner">
+        <section className="auth-panel">
+          <button className="icon-btn" style={{ position: 'absolute', top: 20, right: 20 }} aria-label={`Switch to ${nextTheme(state.theme).label}`} title={`Switch to ${nextTheme(state.theme).label}`} onClick={() => actions.setTheme(nextTheme(state.theme).id)}>
+            <Icon name={nextTheme(state.theme).icon} size={18} />
+          </button>
           {sent ? (
-            <div className="auth-sent" ref={panel} role="status">
-              <div className="auth-sent-icon"><Icon name={sent.kind === 'reset' ? 'KeyRound' : 'MailCheck'} size={26} /></div>
+            <motion.div className="auth-sent" key={`sent-${sent.kind}`} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
+              <div className="auth-sent-icon"><Icon name={sent.kind === 'reset' ? 'KeyRound' : 'MailCheck'} size={28} /></div>
               <div className="eyebrow">Check your inbox</div>
               <h2>{sent.kind === 'reset' ? 'Reset link on its way' : 'Confirm your email'}</h2>
               <p>
@@ -166,107 +135,107 @@ export default function Login() {
                 {sent.kind === 'reset' ? 'Open it to choose a new password. It works for 1 hour.' : 'Open it to activate your account; you will be signed in right away. It works for 24 hours.'}
               </p>
               {sent.warning && <div className="form-error"><Icon name="CircleAlert" size={16} />{sent.warning}</div>}
-              {error && <div className="form-error" role="alert"><Icon name="CircleAlert" size={16} />{error}</div>}
+              {error && <div className="form-error"><Icon name="CircleAlert" size={16} />{error}</div>}
               <div className="auth-sent-actions">
                 {sent.kind === 'verify' && <button type="button" className="btn ghost" disabled={cooldown} onClick={resend}><Icon name="Send" size={15} />{cooldown ? 'Sent — check spam too' : 'Resend the link'}</button>}
                 <button type="button" className="btn" onClick={() => { setSent(null); switchMode('login') }}>Back to sign in <Icon name="ArrowRight" size={16} /></button>
               </div>
-            </div>
+            </motion.div>
           ) : (
-            <form onSubmit={submit} ref={panel} noValidate={false} aria-describedby={error ? 'auth-error' : undefined}>
-              <div>
-                <div className="eyebrow">{TITLES.eyebrow[mode]}</div>
-                <h2>{TITLES.heading[mode]}</h2>
+          <motion.form onSubmit={submit} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}>
+            <div className="eyebrow">{{ login: 'Welcome back', signup: 'Create account', forgot: 'Forgot password', reset: 'Almost there' }[mode]}</div>
+            <h2>{{ login: 'Sign in to your space', signup: 'Join your team', forgot: 'Reset your password', reset: 'Choose a new password' }[mode]}</h2>
+            {(mode === 'login' || mode === 'signup') && (
+              <Tabs id="auth" value={mode} onChange={switchMode} items={[{ value: 'login', label: 'Sign in' }, { value: 'signup', label: 'Sign up' }]} />
+            )}
+            {mode === 'forgot' && <p className="auth-hint">Enter your account’s email and we’ll send you a link to choose a new password.</p>}
+
+            <AnimatePresence initial={false}>
+              {mode === 'signup' && (
+                <motion.div className="field" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                  <label>Full name</label>
+                  <input className="input" required value={form.name} onChange={on('name')} placeholder="Hamzaoui" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {mode !== 'reset' && (
+              <div className="field">
+                <label>Email</label>
+                <input className="input" type="email" required value={form.email} onChange={on('email')} placeholder="hamzaoui@company.com" autoComplete="email" />
               </div>
-              {(mode === 'login' || mode === 'signup') && (
-                <Tabs label="Account" value={mode} onChange={switchMode} items={[{ value: 'login', label: 'Sign in' }, { value: 'signup', label: 'Sign up' }]} className="auth-tabs" />
-              )}
-              {mode === 'forgot' && <p className="auth-hint">Enter your account’s email and we’ll send you a link to choose a new password.</p>}
-
-              <Presence show={mode === 'signup'} variant="rise" duration={0.35} appear={false}>
-                <div className="field">
-                  <label htmlFor="auth-name">Full name</label>
-                  <input id="auth-name" className="input" required value={form.name} onChange={on('name')} placeholder="Hamzaoui" autoComplete="name" />
+            )}
+            {mode !== 'forgot' && (
+              <div className="field">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <label htmlFor="auth-password">{mode === 'reset' ? 'New password' : 'Password'}</label>
+                  {mode === 'login' && !DEMO && <button type="button" className="nlink" style={{ padding: 0 }} onClick={() => switchMode('forgot')}>Forgot password?</button>}
                 </div>
-              </Presence>
-              {mode !== 'reset' && (
-                <div className="field">
-                  <label htmlFor="auth-email">Email</label>
-                  <input id="auth-email" className="input" type="email" required value={form.email} onChange={on('email')} placeholder="hamzaoui@company.com" autoComplete="email" />
+                <div style={{ position: 'relative' }}>
+                  <input id="auth-password" className="input" type={show ? 'text' : 'password'} required minLength={mode === 'login' ? undefined : 8} value={form.password} onChange={on('password')} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} placeholder={mode === 'login' ? '' : 'At least 8 characters'} />
+                  <button type="button" onClick={() => setShow(!show)} style={{ position: 'absolute', right: 12, top: 12, color: 'var(--dim)' }} aria-label="Show password"><Icon name={show ? 'EyeOff' : 'Eye'} size={18} /></button>
                 </div>
-              )}
-              {mode !== 'forgot' && (
-                <div className="field">
-                  <div className="field-row">
-                    <label htmlFor="auth-password">{mode === 'reset' ? 'New password' : 'Password'}</label>
-                    {mode === 'login' && !DEMO && <button type="button" className="text-link" onClick={() => switchMode('forgot')}>Forgot password?</button>}
-                  </div>
-                  <div className="input-wrap">
-                    <input id="auth-password" className="input" type={show ? 'text' : 'password'} required minLength={mode === 'login' ? undefined : 8} value={form.password} onChange={on('password')} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} placeholder={mode === 'login' ? '' : 'At least 8 characters'} />
-                    <button type="button" className="input-action" onClick={() => setShow(!show)} aria-label={show ? 'Hide password' : 'Show password'} aria-pressed={show}><Icon name={show ? 'EyeOff' : 'Eye'} size={17} /></button>
-                  </div>
-                </div>
-              )}
-              {mode === 'reset' && (
-                <div className="field">
-                  <label htmlFor="auth-confirm">Repeat the new password</label>
-                  <input id="auth-confirm" className="input" type={show ? 'text' : 'password'} required minLength={8} value={form.confirm} onChange={on('confirm')} autoComplete="new-password" />
-                </div>
-              )}
-              {mode === 'signup' && DEMO && (
-                <div className="field">
-                  <label htmlFor="auth-role">I am joining as</label>
-                  <select id="auth-role" className="input" value={form.role} onChange={on('role')}>
-                    <option value="student">Employee</option><option value="manager">Manager</option><option value="hr">HR</option>
-                  </select>
-                </div>
-              )}
-              {notice && <div className="form-ok" role="status"><Icon name="CircleCheck" size={16} />{notice}</div>}
-              {error && (
-                <div className="form-error" id="auth-error" role="alert">
-                  <Icon name="CircleAlert" size={16} />
-                  <span style={{ flex: 1 }}>{error}</span>
-                  {unconfirmed && <button type="button" className="text-link" disabled={cooldown} onClick={resend}>{cooldown ? 'Sent' : 'Resend the link'}</button>}
-                </div>
-              )}
-              <button className="btn lg block" disabled={busy} aria-busy={busy}>
-                {TITLES.submit[mode]} <Icon name="ArrowRight" size={16} />
+              </div>
+            )}
+            {mode === 'reset' && (
+              <div className="field">
+                <label>Repeat the new password</label>
+                <input className="input" type={show ? 'text' : 'password'} required minLength={8} value={form.confirm} onChange={on('confirm')} autoComplete="new-password" />
+              </div>
+            )}
+            {mode === 'signup' && DEMO && (
+              <div className="field">
+                <label>I am joining as</label>
+                <select className="input" value={form.role} onChange={on('role')}>
+                  <option value="student">Employee</option><option value="manager">Manager</option><option value="hr">HR</option>
+                </select>
+              </div>
+            )}
+            {notice && <div className="form-ok"><Icon name="CircleCheck" size={16} />{notice}</div>}
+            {error && (
+              <div className="form-error">
+                <Icon name="CircleAlert" size={16} />
+                <span style={{ flex: 1 }}>{error}</span>
+                {unconfirmed && <button type="button" className="nlink" disabled={cooldown} onClick={resend}>{cooldown ? 'Sent' : 'Resend the link'}</button>}
+              </div>
+            )}
+            <button className="btn" disabled={busy} style={{ width: '100%', padding: 14 }}>
+              {busy ? 'Please wait…' : { login: 'Sign in', signup: 'Create account', forgot: 'Send the reset link', reset: 'Save and sign in' }[mode]} <Icon name="ArrowRight" size={16} />
+            </button>
+            {(mode === 'forgot' || mode === 'reset') && (
+              <button type="button" className="nlink" style={{ justifySelf: 'center' }} onClick={() => { if (mode === 'reset') window.history.replaceState({}, '', '/'); switchMode('login') }}>
+                <Icon name="ArrowLeft" size={14} />Back to sign in
               </button>
-              {(mode === 'forgot' || mode === 'reset') && (
-                <button type="button" className="text-link center" onClick={() => { if (mode === 'reset') window.history.replaceState({}, '', '/'); switchMode('login') }}>
-                  <Icon name="ArrowLeft" size={14} />Back to sign in
-                </button>
-              )}
+            )}
 
-              {(mode === 'login' || mode === 'signup') && (
-                <>
-                  <div className="or"><span>or continue with</span></div>
-                  <div className="oauth">
-                    {PROVIDERS.map((p) => (
-                      <button key={p.id} type="button" className="btn ghost" onClick={() => oauth(p.id)} disabled={!!waking && waking !== p.id} aria-busy={waking === p.id} aria-label={`Continue with ${p.label}`}>{p.icon}<span>{p.label}</span></button>
+            {(mode === 'login' || mode === 'signup') && (
+              <>
+                <div className="or"><span>or continue with</span></div>
+                <div className="oauth">
+                  {PROVIDERS.map((p) => (
+                    <button key={p.id} type="button" className="btn ghost" onClick={() => oauth(p.id)} disabled={!!waking && waking !== p.id} aria-busy={waking === p.id} aria-label={`Continue with ${p.label}`}>{p.icon}{waking === p.id ? 'Connecting…' : p.label}</button>
+                  ))}
+                </div>
+                {(busy || waking) && !apiAwake() && <p className="auth-hint" role="status" style={{ marginTop: 10 }}>Waking up the server — after a quiet spell this takes up to a minute.</p>}
+              </>
+            )}
+
+            {DEMO && (
+              <div className="demo-box">
+                <Icon name="Info" size={16} />
+                <div>
+                  <b>Demo mode</b> — no backend connected. Try a role:
+                  <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                    {DEMO_ACCOUNTS.map((a) => (
+                      <button type="button" key={a.label} className={`chip ${form.email === a.email ? 'accent' : ''}`} onClick={() => { setMode('login'); setForm({ ...form, email: a.email, password: 'demo1234' }) }}>{a.label}</button>
                     ))}
                   </div>
-                  {(busy || waking) && !apiAwake() && <p className="auth-hint" role="status">Waking up the server — after a quiet spell this takes up to a minute.</p>}
-                </>
-              )}
-
-              {DEMO && (
-                <div className="demo-box">
-                  <Icon name="Info" size={16} />
-                  <div>
-                    <b>Demo mode</b> — no backend connected. Try a role:
-                    <div className="demo-roles">
-                      {DEMO_ACCOUNTS.map((a) => (
-                        <button type="button" key={a.label} className={`chip ${form.email === a.email ? 'accent' : ''}`} aria-pressed={form.email === a.email} onClick={() => { setMode('login'); setForm({ ...form, email: a.email, password: 'demo1234' }) }}>{a.label}</button>
-                      ))}
-                    </div>
-                  </div>
                 </div>
-              )}
-            </form>
+              </div>
+            )}
+          </motion.form>
           )}
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   )
 }

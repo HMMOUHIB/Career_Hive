@@ -13,8 +13,9 @@ import * as THREE from 'three'
 import { FrameCap, renderer, RESIZE } from './renderer'
 
 const PALETTE = {
-  dark: { a: '#ff5b45', b: '#ffa66b', sheet: '#fff6f3', line: '#efd5cf', ink: '#b8202f' },
-  light: { a: '#d8402b', b: '#e0703f', sheet: '#ffffff', line: '#eed8d4', ink: '#9e1f2a' },
+  frost: { a: '#2f7bf6', b: '#5fb2ff', sheet: '#ffffff', line: '#d3deef', ink: '#1c3fc9' },
+  ember: { a: '#ff6a55', b: '#ff9a7e', sheet: '#fff6f3', line: '#efd5cf', ink: '#b8202f' },
+  light: { a: '#d63a3a', b: '#f0664e', sheet: '#ffffff', line: '#eed8d4', ink: '#9e1f2a' },
 }
 const GOOD = new THREE.Color('#14a36b'), BAD = new THREE.Color('#e0453c')
 const W = 2.2, H = 2.9, R = 0.2, F = 0.5, D = 0.1 // sheet width, height, corner radius, fold, depth
@@ -110,7 +111,7 @@ function Mark({ theme, mode }) {
   // theme colours, and the working colours the frame loop blends between
   const col = useMemo(() => ({ a: new THREE.Color(), b: new THREE.Color(), line: new THREE.Color(), tmp: new THREE.Color() }), [])
   useEffect(() => {
-    const p = PALETTE[theme] ?? PALETTE.dark
+    const p = PALETTE[theme] ?? PALETTE.frost
     col.a.set(p.a); col.b.set(p.b); col.line.set(p.line)
     mat.sheet.color.set(p.sheet); mat.face.color.set(p.sheet)
     mat.fold.color.set(p.b); mat.avatar.color.set(p.a); mat.title.color.set(p.ink); mat.sub.color.set(p.line).multiplyScalar(0.86)

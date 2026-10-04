@@ -1,6 +1,7 @@
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { AccountRow, useAccounts } from '../components/Accounts'
-import { Icon, Page, Reveal, Skeleton } from '../components/ui'
+import { Icon, Page, rise, Reveal } from '../components/ui'
 
 // People & roles — only the workspace owner sees this. New accounts (email, LinkedIn, GitHub, Google) start as employees;
 // the owner decides who is a manager or HR, and can delete accounts. The backend enforces it (/api/people).
@@ -12,29 +13,28 @@ export default function People() {
 
   return (
     <Page>
-      <div data-reveal className="page-head">
+      <motion.div variants={rise} className="page-head">
         <div>
           <div className="eyebrow">Manage · People & roles</div>
           <Reveal text="People & roles" />
           <p>{count('student')} employees · {count('manager')} managers · {count('hr')} HR</p>
         </div>
-      </div>
+      </motion.div>
 
-      <div data-reveal className="note" style={{ marginBottom: 14 }}>
+      <motion.div variants={rise} className="note" style={{ marginBottom: 14 }}>
         <Icon name="ShieldCheck" size={16} />
         <div>New accounts — email, LinkedIn, GitHub or Google — start as <b>employees</b>. You choose who becomes a manager or HR; the change applies right away and the person is notified. Deleting an account also removes their requests, messages and enrollments.</div>
-      </div>
+      </motion.div>
 
-      <div data-reveal style={{ marginBottom: 14 }}>
-        <label htmlFor="people-filter" className="sr-only">Filter people</label>
-        <input id="people-filter" type="search" className="input" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Search by name, email, position or department" />
-      </div>
+      <motion.div variants={rise} style={{ marginBottom: 14 }}>
+        <input className="input" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Search by name, email, position or department" />
+      </motion.div>
 
-      <section data-reveal className="card people-list" aria-label="Accounts" aria-busy={!people}>
-        {!people && <Skeleton lines={4} className="people-loading" />}
-        {people && !shown.length && <div className="people-empty">No one matches “{filter}”. Try a name, an email or a department.</div>}
+      <motion.section variants={rise} className="card people-list">
+        {!people && <div className="people-empty">Loading people…</div>}
+        {people && !shown.length && <div className="people-empty">No one matches.</div>}
         {shown.map((p) => <AccountRow key={p.id} person={p} busy={busy} onRole={changeRole} onDelete={remove} idPrefix="people" />)}
-      </section>
+      </motion.section>
     </Page>
   )
 }
